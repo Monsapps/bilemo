@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
  * @ORM\Table
+ * @Serializer\ExclusionPolicy("ALL")
  */
 class Product
 {
@@ -19,11 +21,13 @@ class Product
 
     /**
      * @ORM\Column(type="string")
+     * @Serializer\Expose
      */
     private $name;
 
     /**
      * @ORM\Column(type="string")
+     * @Serializer\Expose
      */
     private $brand;
 
