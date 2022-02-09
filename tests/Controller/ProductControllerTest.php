@@ -73,5 +73,31 @@ class ProductControllerTest extends WebTestCase
         $this->assertArrayHasKey("previous_page", $arrayResponse['pagination']);
 
     }
+
+    public function testProductDetailsPageIsUp(): void
+    {
+
+        $client = static::createClient();
+        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+
+        $client->request('GET', '/products/1');
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testProductDetailsPageContent(): void
+    {
+
+        $client = static::createClient();
+        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+
+        $client->request('GET', '/products/1');
+
+        $response = $client->getResponse();
+
+        $arrayResponse = json_decode($response->getContent(), true);
+
+        $this->assertEquals('Details for product 0', $arrayResponse['details']);
+    }
     
 }

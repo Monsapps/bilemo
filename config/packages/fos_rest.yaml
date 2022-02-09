@@ -27,6 +27,7 @@ fos_rest:
             json: ['application/json', 'application/json;version=1.0', 'application/json;version=2.0']
     serializer:
         serialize_null: true
+        groups: ['Default']
     format_listener:
         rules:
             - { path: ^/, prefer_extension: true, fallback_format: json, priorities: [ json ] }

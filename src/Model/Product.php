@@ -7,8 +7,6 @@ namespace App\Model;
 
 use JMS\Serializer\Annotation\Type;
 use Pagerfanta\Pagerfanta;
-use Pagerfanta\RouteGenerator\RouteGeneratorFactoryInterface;
-use Pagerfanta\RouteGenerator\RouteGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class Product
@@ -29,28 +27,22 @@ class Product
         $this->addMeta('total_items', $pagerFanta->getNbResults());
         $this->addMeta('total_pages', $pagerFanta->getNbPages());
 
-        $test = $router->generate('product_list', [
-            'page' => $pagerFanta->getPreviousPage()
-        ],
-        UrlGeneratorInterface::ABSOLUTE_URL);
-
-        //TODO add params Pagerfanta\RouteGenerator\RouteGeneratorInterface ?
         // Add Hypermedia
         if($pagerFanta->hasPreviousPage()) {
-            $this->pagination['previous_page'] = $router->generate('product_list', [
+            $this->pagination['previous_page']['href'] = $router->generate('product_list', [
                 'page' => $pagerFanta->getPreviousPage()
             ],
             UrlGeneratorInterface::ABSOLUTE_URL);
 
         }
 
-        $this->pagination['current_page'] = $router->generate('product_list', [
+        $this->pagination['current_page']['href'] = $router->generate('product_list', [
             'page' => $pagerFanta->getCurrentPage()
         ],
         UrlGeneratorInterface::ABSOLUTE_URL);
         
         if($pagerFanta->hasNextPage()) {
-            $this->pagination['next_page'] =  $router->generate('product_list', [
+            $this->pagination['next_page']['href'] =  $router->generate('product_list', [
                 'page' => $pagerFanta->getNextPage()
             ],
         UrlGeneratorInterface::ABSOLUTE_URL);
