@@ -9,7 +9,9 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ProductController extends AbstractController
 {
@@ -27,14 +29,6 @@ class ProductController extends AbstractController
         $products = $productService->getProductList($paramFetch);
 
         return new View($products);
-
-        /*return new Response(
-            $serializer->serialize($products, 'json'),
-            Response::HTTP_OK,
-            [
-                'Content-Type' => 'application/json'
-            ]
-        );*/
     }
 
     /**
@@ -43,15 +37,29 @@ class ProductController extends AbstractController
      */
     public function productDetails(Product $product, SerializerInterface $serializer): View
     {
-
         return new View($product);
-        return new Response(
-            $serializer->serialize($product, 'json'),
-            Response::HTTP_OK,
-            [
-                'Content-Type' => 'application/json'
-            ]
-        );
+    }
 
+    /**
+     * @Rest\Post("/products", name="product_post")
+     */
+    public function productPost(ProductService $productService, Request $request)
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        $product = $productService->addProduct($data);
+
+        return new View(
+            $product,
+            Response::HTTP_CREATED,
+            [
+                'Location' => $this->generateUrl(
+                    'product_details',
+                    [
+                        'id' => $product->getId(),
+                        UrlGeneratorInterface::ABSOLUTE_PATH
+                    ])
+            ]);
     }
 }

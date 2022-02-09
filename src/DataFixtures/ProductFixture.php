@@ -12,8 +12,12 @@ class ProductFixture extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        for ($i = 0; $i < 50; $i++) {
-            $product = new Product('Product ' .$i, 'Brand', 'Details for product ' . $i, new \DateTime() );
+        for ($i = 1; $i < 51; $i++) {
+            $product = new Product();
+            $product->setName('Product ' .$i);
+            $product->setBrand('Brand');
+            $product->setDetails('Details for product ' . $i);
+            $product->setReleaseDate(new \DateTime());
             $manager->persist($product);
         }
 
