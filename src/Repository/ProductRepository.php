@@ -3,13 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Product;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 
-class ProductRepository extends ServiceEntityRepository
+class ProductRepository extends BasePaginateRepository
 {
 
     public function __construct(ManagerRegistry $registry)
@@ -32,15 +29,6 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         return $this->paginate($queryBuilder, $limit, $offset);
-    }
-
-    private function paginate(QueryBuilder $queryBuilder, int $limit, int $offset): Pagerfanta
-    {
-        $pager = new Pagerfanta(new QueryAdapter($queryBuilder));
-        $pager->setCurrentPage($offset);
-        $pager->setMaxPerPage((int) $limit);
-        
-        return $pager;
     }
 
 }

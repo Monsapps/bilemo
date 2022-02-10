@@ -27,6 +27,7 @@ services:
         arguments:
             - { type: 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException' }
         tags: ['app.normalizer']
+
     app.normalizer.constraint_validation_exception:
         class: App\Normalizer\ConstraintValidationExceptionNormalizer
         arguments:

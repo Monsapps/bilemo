@@ -29,7 +29,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function processException(ExceptionEvent $event)
+    public function processException(ExceptionEvent $event): void
     {
         $result = null;
 
@@ -56,7 +56,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $event->setResponse(new Response($body, $result['code']));
     }
 
-    public function addNormalizer(NormalizerInterface $normalizer)
+    public function addNormalizer(NormalizerInterface $normalizer): void
     {
         $this->normalizers[] = $normalizer;
     }

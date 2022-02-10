@@ -3,23 +3,19 @@
 namespace App\Service;
 
 use App\Entity\Product;
-use App\Exception\ConstraintValidationException;
 use App\Model\Product as ModelProduct;
 use App\Repository\ProductRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Exception;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class ProductService
+class ProductService extends BaseService
 {
 
     private $managerRegistry;
     private $productRepo;
     private $router;
-    private $validator;
 
     public function __construct(
         ManagerRegistry $managerRegistry,
@@ -30,7 +26,8 @@ class ProductService
         $this->managerRegistry = $managerRegistry;
         $this->productRepo = $productRepo;
         $this->router = $router;
-        $this->validator = $validator;
+
+        parent::__construct($validator);
     }
 
     public function getProductList(ParamFetcherInterface $paramFetch): ModelProduct
@@ -53,7 +50,7 @@ class ProductService
         
         $this->addProductInfo($product, $data);
 
-        $this->productValidator($product);
+        $this->entityValidator($product);
 
         $entityManager = $this->managerRegistry->getManager();
 
@@ -68,7 +65,7 @@ class ProductService
 
         $this->addProductInfo($product, $data);
 
-        $this->productValidator($product);
+        $this->entityValidator($product);
 
         $entityManager = $this->managerRegistry->getManager();
 
@@ -99,17 +96,6 @@ class ProductService
         }
 
         return $product;
-    }
-
-    private function productValidator(Product $product): void
-    {
-
-        $violations = $this->validator->validate($product);
-
-        if(count($violations)) {
-
-            throw new ValidationFailedException($product, $violations);
-        }
     }
 
 }

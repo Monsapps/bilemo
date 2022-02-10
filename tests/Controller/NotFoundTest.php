@@ -31,4 +31,14 @@ class NotFoundTest extends WebTestCase
 
         $this->assertArrayHasKey("message", json_decode($response->getContent(), true));
     }
+
+    public function testDefaultExceptionNormalizer(): void
+    {
+        $client = static::createClient();
+        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+
+        $client->request('PUT', '/products');
+
+        $this->assertResponseStatusCodeSame(400);
+    }
 }
