@@ -21,7 +21,7 @@ class ProductController extends AbstractController
     #[Rest\QueryParam(name: 'limit', requirements: '\d+', default: '15', description: 'Max articles per page.')]
     #[Rest\QueryParam(name: 'page', requirements: '\d+', default: '1', description: 'The page number.')]
     /**
-     * @Rest\View)
+     * @Rest\View
      */
     public function productList(ProductService $productService, ParamFetcherInterface $paramFetch): View
     {

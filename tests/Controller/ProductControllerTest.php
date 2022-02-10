@@ -99,5 +99,49 @@ class ProductControllerTest extends WebTestCase
 
         $this->assertEquals('Details for product 0', $arrayResponse['details']);
     }
+
+    public function testProductPostGoodData(): void
+    {
+        $client = static::createClient();
+        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+
+        $data = '{
+            "name": "Test product",
+            "brand": "Test brand",
+            "details": "Test details",
+            "releaseDate": "2022-02-18 4:30:30"
+        }';
+
+        $client->request(
+            'POST',
+            '/products',
+            [],
+            [],
+            [],
+            $data);
+
+        $this->assertResponseStatusCodeSame(201);
+    }
+
+    public function testProductPostBadData(): void
+    {
+        $client = static::createClient();
+        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+
+        $data = '{}';
+
+        $client->request(
+            'POST',
+            '/products',
+            [],
+            [],
+            [],
+            $data);
+
+        $this->assertResponseStatusCodeSame(400);
+        
+    }
+
+
     
 }

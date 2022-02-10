@@ -48,14 +48,16 @@ class ProductService
     {
         
         $product = new Product();
-        $product->setName($data['name']);
-        $product->setBrand($data['brand']);
-        $product->setDetails($data['details']);
+        (!empty($data['name'])) ? $product->setName($data['name']) : '';
+        (!empty($data['brand'])) ? $product->setBrand($data['brand']) : '';
+        (!empty($data['details'])) ? $product->setDetails($data['details']) : '';
         /**
          * Date format: Y-m-d H:i
          */
-        $date = new \DateTime($data['releaseDate']);
-        $product->setReleaseDate($date);
+        if(!empty($data['releaseDate'])) {
+            $date = new \DateTime($data['releaseDate']);
+            $product->setReleaseDate($date);
+        }
 
         $violations = $this->validator->validate($product);
 
