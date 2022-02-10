@@ -3,12 +3,14 @@
 namespace App\Service;
 
 use App\Entity\Product;
+use App\Exception\ConstraintValidationException;
 use App\Model\Product as ModelProduct;
 use App\Repository\ProductRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductService
@@ -105,12 +107,8 @@ class ProductService
         $violations = $this->validator->validate($product);
 
         if(count($violations)) {
-            $message = "Houston we have a problem!\n";
 
-            foreach ($violations as $violation) {
-                $message .= sprintf("Field %s: %s \n", $violation->getPropertyPath(), $violation->getMessage());
-            }
-            throw new Exception($message);
+            throw new ValidationFailedException($product, $violations);
         }
     }
 

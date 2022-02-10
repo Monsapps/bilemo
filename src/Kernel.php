@@ -19,10 +19,10 @@ class Kernel extends BaseKernel implements CompilerPassInterface
             return;
         }
 
-        $exceptionListenerDefinition = $container->findDefinition(ExceptionSubscriber::class);
+        $exceptionSubscriber = $container->findDefinition(ExceptionSubscriber::class);
 
         foreach ($container->findTaggedServiceIds('app.normalizer') as $id => $tags) {
-            $exceptionListenerDefinition->addMethodCall('addNormalizer', [new Reference($id)]);
+            $exceptionSubscriber->addMethodCall('addNormalizer', [new Reference($id)]);
         }
     }
 }
