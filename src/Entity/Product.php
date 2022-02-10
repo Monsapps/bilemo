@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
+use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Asserts;
 
 /**
@@ -28,6 +29,11 @@ class Product
      * @ORM\GeneratedValue(strategy="AUTO")
      * 
      * @Serializer\Groups({"Default"})
+     * 
+     * @OA\Property(
+     *      type="integer",
+     *      description="The unique identifier of the product."
+     * )
      */
     private $id;
 
@@ -37,6 +43,11 @@ class Product
      * @Serializer\Groups({"Default", "Details"})
      * 
      * @Asserts\NotBlank
+     * 
+     * @OA\Property(
+     *      type="string",
+     *      description="Name of the product."
+     * )
      */
     private $name;
 
@@ -46,6 +57,11 @@ class Product
      * @Serializer\Groups({"Default", "Details"})
      * 
      * @Asserts\NotBlank
+     * 
+     * @OA\Property(
+     *      type="string",
+     *      description="Brand of the product."
+     * )
      */
     private $brand;
 
@@ -55,6 +71,11 @@ class Product
      * @Serializer\Groups({"Details"})
      * 
      * @Asserts\NotBlank
+     * 
+     * @OA\Property(
+     *      type="string",
+     *      description="Details of the product."
+     * )
      */
     private $details;
 
@@ -66,6 +87,11 @@ class Product
      * @Asserts\Type("\DateTimeInterface")
      * 
      * @Asserts\NotBlank
+     * 
+     * @OA\Property(
+     *      type="datetime",
+     *      description="Release date of the product."
+     * )
      * 
      */
     private $releaseDate;
