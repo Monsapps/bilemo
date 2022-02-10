@@ -78,4 +78,15 @@ class ProductController extends AbstractController
             $product,
             Response::HTTP_ACCEPTED);
     }
+
+    /**
+     * @Rest\Delete("/products/{id}", name="product_delete")
+     */
+    public function productDelete(Product $product, ProductService $productService): View
+    {
+
+        $productService->deleteProduct($product);
+
+        return new View('', Response::HTTP_NO_CONTENT);
+    }
 }

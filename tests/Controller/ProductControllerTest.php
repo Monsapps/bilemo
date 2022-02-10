@@ -153,7 +153,7 @@ class ProductControllerTest extends WebTestCase
 
         $client->request(
             'PATCH',
-            '/products/25',
+            '/products/1',
             [],
             [],
             [],
@@ -162,6 +162,13 @@ class ProductControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(202);
     }
 
+    public function testProductDelete(): void
+    {
+        $client = static::createClient();
+        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
 
-    
+        $client->request('DELETE', '/products/1');
+
+        $this->assertResponseStatusCodeSame(204);
+    }
 }

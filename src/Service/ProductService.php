@@ -75,6 +75,13 @@ class ProductService
         return $product;
     }
 
+    public function deleteProduct(Product $product): void
+    {
+        $entityManager = $this->managerRegistry->getManager();
+        $entityManager->remove($product);
+        $entityManager->flush();
+    }
+
     private function addProductInfo(Product $product, array $data): Product
     {
 
