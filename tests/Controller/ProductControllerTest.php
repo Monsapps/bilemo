@@ -139,7 +139,27 @@ class ProductControllerTest extends WebTestCase
             $data);
 
         $this->assertResponseStatusCodeSame(400);
-        
+    }
+
+    public function testProductPatchData(): void
+    {
+
+        $client = static::createClient();
+        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+
+        $data = '{
+            "name": "Product edited"
+        }';
+
+        $client->request(
+            'PATCH',
+            '/products/25',
+            [],
+            [],
+            [],
+            $data);
+
+        $this->assertResponseStatusCodeSame(202);
     }
 
 

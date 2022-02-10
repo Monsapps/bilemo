@@ -7,7 +7,6 @@ use App\Service\ProductService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,15 +34,16 @@ class ProductController extends AbstractController
      * @Rest\Get("/products/{id}", name="product_details")
      * @Rest\View(serializerGroups={"Details"})
      */
-    public function productDetails(Product $product, SerializerInterface $serializer): View
+    public function productDetails(Product $product): View
     {
         return new View($product);
     }
 
     /**
      * @Rest\Post("/products", name="product_post")
+     * @Rest\View(serializerGroups={"Details"})
      */
-    public function productPost(ProductService $productService, Request $request)
+    public function productPost(ProductService $productService, Request $request): View
     {
 
         $data = json_decode($request->getContent(), true);
@@ -61,5 +61,21 @@ class ProductController extends AbstractController
                         UrlGeneratorInterface::ABSOLUTE_PATH
                     ])
             ]);
+    }
+
+    /**
+     * @Rest\Patch("/products/{id}", name="product_patch")
+     * @Rest\View(serializerGroups={"Details"})
+     */
+    public function productPatch(Product $product, Request $request, ProductService $productService): View
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        $product = $productService->editProduct($product, $data);
+
+        return new View(
+            $product,
+            Response::HTTP_ACCEPTED);
     }
 }

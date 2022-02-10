@@ -48,6 +48,36 @@ class ProductService
     {
         
         $product = new Product();
+        
+        $this->addProductInfo($product, $data);
+
+        $this->productValidator($product);
+
+        $entityManager = $this->managerRegistry->getManager();
+
+        $entityManager->persist($product);
+        $entityManager->flush();
+
+        return $product;
+    }
+
+    public function editProduct(Product $product, array $data): Product
+    {
+
+        $this->addProductInfo($product, $data);
+
+        $this->productValidator($product);
+
+        $entityManager = $this->managerRegistry->getManager();
+
+        $entityManager->flush();
+
+        return $product;
+    }
+
+    private function addProductInfo(Product $product, array $data): Product
+    {
+
         (!empty($data['name'])) ? $product->setName($data['name']) : '';
         (!empty($data['brand'])) ? $product->setBrand($data['brand']) : '';
         (!empty($data['details'])) ? $product->setDetails($data['details']) : '';
@@ -59,6 +89,12 @@ class ProductService
             $product->setReleaseDate($date);
         }
 
+        return $product;
+    }
+
+    private function productValidator(Product $product): void
+    {
+
         $violations = $this->validator->validate($product);
 
         if(count($violations)) {
@@ -69,13 +105,6 @@ class ProductService
             }
             throw new Exception($message);
         }
-
-        $entityManager = $this->managerRegistry->getManager();
-
-        $entityManager->persist($product);
-        $entityManager->flush();
-
-        return $product;
     }
 
 }
