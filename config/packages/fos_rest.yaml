@@ -14,7 +14,7 @@
 #        rules:
 #            - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json, html ] }
 fos_rest:
-    param_fetcher_listener:  true
+    param_fetcher_listener: true
     body_converter:
         enabled: false
     view:

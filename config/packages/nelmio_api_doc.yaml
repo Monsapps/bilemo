@@ -15,3 +15,5 @@ nelmio_api_doc:
     areas: # to filter documented areas
         path_patterns:
             - ^/products
+            - ^/users
+            - ^/clients

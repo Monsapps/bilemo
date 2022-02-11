@@ -2,28 +2,31 @@
 
 namespace App\Controller;
 
-use App\Entity\Product;
-use App\Service\ProductService;
+use App\Entity\User;
+use App\Service\UserService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class ProductController extends AbstractController
+class UserController extends AbstractController
 {
     /**
-     * @Rest\Get("/products", name="product_list")
+     * @Rest\Get("/users", name="user_list")
+     * 
      * @Rest\QueryParam(
      *      name="keyword",
      *      requirements="[a-zA-Z0-9]+",
      *      nullable=true,
      *      description="The keyword search for."
      * )
+     * 
      * @Rest\QueryParam(
      *      name="order",
      *      requirements="(asc|desc)",
@@ -34,7 +37,7 @@ class ProductController extends AbstractController
      *      name="limit",
      *      requirements="\d+",
      *      default="15",
-     *      description="Max articles per page."
+     *      description="Max users per page."
      * )
      * @Rest\QueryParam(
      *      name="page",
@@ -48,53 +51,55 @@ class ProductController extends AbstractController
      *      description="Get the list of all products.",
      *      @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=App\Entity\Product::class))
+     *        @OA\Items(ref=@Model(type=App\Entity\User::class))
      *     )
      * )
-     * @OA\Tag(name="Products")
+     * @OA\Tag(name="Users")
      */
-    public function productList(ProductService $productService, ParamFetcherInterface $paramFetch): View
+    public function userList(ParamFetcherInterface $paramFetch, UserService $userService): View
     {
+        //TODO add client
 
-        $products = $productService->getProductList($paramFetch);
+        $users = $userService->getUserList($paramFetch);
 
-        return new View($products);
+        return new View($users);
     }
 
     /**
-     * @Rest\Get("/products/{id}", name="product_details")
-     * @Rest\View(serializerGroups={"Details"})
+     * @Rest\Get("/users/{id}", name="user_details")
+     * @Rest\View(serializerGroups={"ClientView"})
      * 
      * @OA\Response(
      *      response=200,
-     *      description="Get product details."
+     *      description="Get user details."
      * )
      * 
      * @OA\Response(
      *      response=404,
-     *      description="Returned when product not exist."
+     *      description="Returned when user not exist."
      * )
      * 
      * @OA\Parameter(
      *     name="id",
      *     in="query",
-     *     description="The unique identifier of the product.",
+     *     description="The unique identifier of the user.",
      *     @OA\Schema(type="int")
      *  )
-     * @OA\Tag(name="Products")
+     * @OA\Tag(name="Users")
      */
-    public function productDetails(Product $product): View
+    public function userDetails(User $user): View
     {
-        return new View($product);
+        //TODO check user roles and User parent
+        return new View($user);
     }
 
     /**
-     * @Rest\Post("/products", name="product_post")
-     * @Rest\View(serializerGroups={"Details"})
+     * @Rest\Post("/users", name="user_post")
+     * @Rest\View(serializerGroups={"ClientView"})
      * 
      * @OA\Response(
      *      response=201,
-     *      description="Product added successfully."
+     *      description="User added successfully."
      * )
      * 
      * @OA\Response(
@@ -109,58 +114,48 @@ class ProductController extends AbstractController
      *                  @OA\Schema(
      *                      type="object",
      *                      @OA\Property(
-     *                          property="name",
-     *                          description="Product name.",
+     *                          property="username",
+     *                          description="Username.",
      *                          type="string",
      *                      ),
      *                      @OA\Property(
-     *                          property="brand",
-     *                          description="Product brand name.",
+     *                          property="email",
+     *                          description="User email.",
      *                          type="string"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="details",
-     *                          description="Product details.",
-     *                          type="string"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="releaseDate",
-     *                          description="Product release date.",
-     *                          type="datetime"
-     *                      ) 
+     *                      )
      *                  )
      *         )
      * )
      * 
-     * @OA\Tag(name="Products")
+     * @OA\Tag(name="Users")
      */
-    public function productPost(ProductService $productService, Request $request): View
+    public function userPost(UserService $userService, Request $request): View
     {
-
+        // TODO test perms
         $data = json_decode($request->getContent(), true);
 
-        $product = $productService->addProduct($data);
+        $user = $userService->addUser($data);
 
         return new View(
-            $product,
+            $user,
             Response::HTTP_CREATED,
             [
                 'Location' => $this->generateUrl(
-                    'product_details',
+                    'user_details',
                     [
-                        'id' => $product->getId(),
+                        'id' => $user->getId(),
                         UrlGeneratorInterface::ABSOLUTE_PATH
                     ])
             ]);
     }
 
     /**
-     * @Rest\Patch("/products/{id}", name="product_patch")
+     * @Rest\Patch("/users/{id}", name="user_patch")
      * @Rest\View(serializerGroups={"Details"})
      * 
      * @OA\Response(
      *      response=202,
-     *      description="Product updated successfully."
+     *      description="User updated successfully."
      * )
      * 
      * @OA\Response(
@@ -170,13 +165,13 @@ class ProductController extends AbstractController
      * 
      * @OA\Response(
      *      response=404,
-     *      description="Returned when article not exist."
+     *      description="Returned when user not exist."
      * )
      * 
      * @OA\Parameter(
      *     name="id",
      *     in="query",
-     *     description="The unique identifier of the article.",
+     *     description="The unique identifier of the user.",
      *     @OA\Schema(type="int")
      *  )
      * 
@@ -187,67 +182,57 @@ class ProductController extends AbstractController
      *                  @OA\Schema(
      *                      type="object",
      *                      @OA\Property(
-     *                          property="name",
-     *                          description="Updated product name.",
+     *                          property="username",
+     *                          description="Updated username.",
      *                          type="string",
      *                      ),
      *                      @OA\Property(
-     *                          property="brand",
-     *                          description="Updated product brand name.",
+     *                          property="email",
+     *                          description="Updated user email.",
      *                          type="string"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="details",
-     *                          description="Updated product details.",
-     *                          type="string"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="releaseDate",
-     *                          description="Updated product release date.",
-     *                          type="datetime"
-     *                      ) 
+     *                      )
      *                  )
      *         )
      * )
-     * @OA\Tag(name="Products")
+     * @OA\Tag(name="Users")
      */
-    public function productPatch(Product $product, Request $request, ProductService $productService): View
+    public function userPatch(User $user, Request $request, UserService $userService): View
     {
-
+        // TODO test perms
         $data = json_decode($request->getContent(), true);
 
-        $product = $productService->editProduct($product, $data);
+        $user = $userService->editUser($user, $data);
 
         return new View(
-            $product,
+            $user,
             Response::HTTP_ACCEPTED);
     }
 
     /**
-     * @Rest\Delete("/products/{id}", name="product_delete")
+     * @Rest\Delete("/users/{id}", name="user_delete")
      * 
      * @OA\Response(
      *      response=204,
-     *      description="Product removed successfully."
+     *      description="User removed successfully."
      * )
      * 
      * @OA\Response(
      *      response=404,
-     *      description="Returned when article not exist."
+     *      description="Returned when user not exist."
      * )
      * 
      * @OA\Parameter(
      *     name="id",
      *     in="query",
-     *     description="The unique identifier of the article.",
+     *     description="The unique identifier of the user.",
      *     @OA\Schema(type="int")
      *  )
-     * @OA\Tag(name="Products")
+     * @OA\Tag(name="Users")
      */
-    public function productDelete(Product $product, ProductService $productService): View
+    public function userDelete(User $user, UserService $userService)
     {
-
-        $productService->deleteProduct($product);
+        // TODO test perms
+        $userService->deleteUser($user);
 
         return new View('', Response::HTTP_NO_CONTENT);
     }

@@ -6,6 +6,8 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Asserts;
 
 /**
  * @ORM\Entity
@@ -17,41 +19,59 @@ class User
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * 
+     * @Serializer\Groups({"Default"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
+     * 
+     * @Serializer\Groups({"Default", "ClientView", "AdminView"})
+     * 
+     * @Asserts\NotBlank
      */
     private $username;
 
     /**
      * @ORM\Column(type="string")
+     * 
+     * @Serializer\Groups({"Default", "ClientView", "AdminView"})
+     * 
+     * @Asserts\NotBlank
      */
     private $email;
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="users", cascade={"persist"})
      * @ORM\JoinColumn(onDelete="CASCADE")
+     * 
+     * @Serializer\Groups({"AdminView"})
      */
     private $client;
 
     /**
      * @ORM\OneToMany(targetEntity="User", mappedBy="client")
+     * 
+     * @Serializer\Groups({"AdminView"})
      */
     private $users;
 
     /**
      * @ORM\Column(type="json")
+     * 
+     * @Serializer\Groups({"AdminView"})
      */
     private $roles = [];
 
-    public function __construct(string $username, string $email, array $roles)
+    public function __construct()
     {
-        $this->username = $username;
-        $this->email = $email;
-        $this->roles = $roles;
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getUsername(): string
