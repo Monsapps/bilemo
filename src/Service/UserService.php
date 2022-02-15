@@ -7,11 +7,13 @@ use App\Model\User as ModelUser;
 use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserService extends BaseService
 {
+    private $hasher;
     private $managerRegistry;
     private $router;
     private $userRepo;
@@ -19,9 +21,11 @@ class UserService extends BaseService
     public function __construct(
         ManagerRegistry $managerRegistry,
         UrlGeneratorInterface $router,
+        UserPasswordHasherInterface $hasher,
         UserRepository $userRepo,
         ValidatorInterface $validator)
     {
+        $this->hasher = $hasher;
         $this->managerRegistry = $managerRegistry;
         $this->router = $router;
         $this->userRepo = $userRepo;
@@ -89,6 +93,8 @@ class UserService extends BaseService
         (!empty($data['username'])) ? $user->setUsername($data['username']) : '';
 
         (!empty($data['email'])) ? $user->setEmail($data['email']) : '';
+
+        (!empty($data['password'])) ? $user->setPassword($this->hasher->hashPassword($user, $data['password'])) : '';
 
         if($client !== null) {
 

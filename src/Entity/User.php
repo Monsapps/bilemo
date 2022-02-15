@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Hateoas\Configuration\Annotation as Hateoas;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Asserts;
 
 /**
@@ -39,7 +41,7 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *      )
  * )
  */
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
@@ -58,6 +60,15 @@ class User
      * @Asserts\NotBlank
      */
     private $username;
+
+    /**
+     * @ORM\Column(type="string")
+     * 
+     * @Serializer\Groups({"Null"})
+     * 
+     * @Asserts\NotBlank
+     */
+    private $password;
 
     /**
      * @ORM\Column(type="string")
@@ -115,6 +126,13 @@ class User
         return $this;
     }
 
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
     public function getEmail(): string
     {
         return $this->email;
@@ -155,6 +173,19 @@ class User
         }
         
         return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function eraseCredentials()
+    {}
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
     }
 
     public function getRoles(): array

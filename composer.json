@@ -13,6 +13,7 @@
         "doctrine/orm": "^2.11",
         "friendsofsymfony/rest-bundle": "^3.3",
         "jms/serializer-bundle": "^4.0",
+        "lexik/jwt-authentication-bundle": "^2.14",
         "nelmio/api-doc-bundle": "^4.8",
         "pagerfanta/doctrine-orm-adapter": "^3.5",
         "sensio/framework-extra-bundle": "^6.2",

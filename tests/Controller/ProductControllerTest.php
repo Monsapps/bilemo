@@ -97,7 +97,7 @@ class ProductControllerTest extends WebTestCase
 
         $arrayResponse = json_decode($response->getContent(), true);
 
-        $this->assertEquals('Details for product 0', $arrayResponse['details']);
+        $this->assertEquals('Details for product 1', $arrayResponse['details']);
     }
 
     public function testProductPostGoodData(): void

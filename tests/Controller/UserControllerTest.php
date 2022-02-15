@@ -92,7 +92,8 @@ class UserControllerTest extends WebTestCase
 
         $data = '{
             "username": "New user",
-            "email": "email@gmail.com"
+            "email": "email@gmail.com",
+            "password": "password12345"
         }';
 
         $client->request(
