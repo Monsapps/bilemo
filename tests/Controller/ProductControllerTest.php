@@ -41,7 +41,7 @@ class ProductControllerTest extends WebTestCase
 
         $response = $client->getResponse();
 
-        $this->assertArrayHasKey("pagination", json_decode($response->getContent(), true));
+        $this->assertArrayHasKey("_links", json_decode($response->getContent(), true));
     }
 
     public function testProductListSearch(): void
@@ -70,7 +70,7 @@ class ProductControllerTest extends WebTestCase
 
         $arrayResponse = json_decode($response->getContent(), true);
 
-        $this->assertArrayHasKey("previous_page", $arrayResponse['pagination']);
+        $this->assertArrayHasKey("previous_page", $arrayResponse['_links']);
 
     }
 
@@ -159,7 +159,7 @@ class ProductControllerTest extends WebTestCase
             [],
             $data);
 
-        $this->assertResponseStatusCodeSame(202);
+        $this->assertResponseStatusCodeSame(200);
     }
 
     public function testProductDelete(): void

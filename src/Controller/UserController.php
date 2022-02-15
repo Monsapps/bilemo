@@ -205,7 +205,7 @@ class UserController extends AbstractController
 
         return new View(
             $user,
-            Response::HTTP_ACCEPTED);
+            Response::HTTP_OK);
     }
 
     /**

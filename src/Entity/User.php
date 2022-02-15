@@ -6,12 +6,38 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Hateoas\Configuration\Annotation as Hateoas;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Asserts;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table
+ * 
+ * @Hateoas\Relation(
+ *      name = "self",
+ *      href = @Hateoas\Route(
+ *          "user_details",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *      name = "modify",
+ *      href = @Hateoas\Route(
+ *          "user_patch",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *      name = "delete",
+ *      href = @Hateoas\Route(
+ *          "user_delete",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      )
+ * )
  */
 class User
 {
@@ -39,6 +65,9 @@ class User
      * @Serializer\Groups({"Default", "ClientView", "AdminView"})
      * 
      * @Asserts\NotBlank
+     * @Asserts\Email(
+     *     message = "The email '{{ value }}' is not a valid email."
+     * )
      */
     private $email;
 

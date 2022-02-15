@@ -220,7 +220,7 @@ class ProductController extends AbstractController
 
         return new View(
             $product,
-            Response::HTTP_ACCEPTED);
+            Response::HTTP_OK);
     }
 
     /**

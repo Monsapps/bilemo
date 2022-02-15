@@ -20,6 +20,22 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          absolute = true
  *      )
  * )
+ * @Hateoas\Relation(
+ *      name = "modify",
+ *      href = @Hateoas\Route(
+ *          "product_patch",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *      name = "delete",
+ *      href = @Hateoas\Route(
+ *          "product_delete",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      )
+ * )
  */
 class Product
 {

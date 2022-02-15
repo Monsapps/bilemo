@@ -12,7 +12,7 @@ class User
      * @Type(value="array<App\Entity\User>")
      */
     public $data;
-    public $pagination;
+    public $_links;
     public $meta;
 
     public function __construct(Pagerfanta $pagerFanta, UrlGeneratorInterface $router)
@@ -26,20 +26,20 @@ class User
 
         // Add Hypermedia
         if($pagerFanta->hasPreviousPage()) {
-            $this->pagination['previous_page']['href'] = $router->generate('user_list', [
+            $this->_links['previous_page']['href'] = $router->generate('user_list', [
                 'page' => $pagerFanta->getPreviousPage()
             ],
             UrlGeneratorInterface::ABSOLUTE_URL);
 
         }
 
-        $this->pagination['current_page']['href'] = $router->generate('user_list', [
+        $this->_links['current_page']['href'] = $router->generate('user_list', [
             'page' => $pagerFanta->getCurrentPage()
         ],
         UrlGeneratorInterface::ABSOLUTE_URL);
         
         if($pagerFanta->hasNextPage()) {
-            $this->pagination['next_page']['href'] =  $router->generate('user_list', [
+            $this->_links['next_page']['href'] =  $router->generate('user_list', [
                 'page' => $pagerFanta->getNextPage()
             ],
         UrlGeneratorInterface::ABSOLUTE_URL);
