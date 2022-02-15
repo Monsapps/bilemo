@@ -20,7 +20,13 @@ class UserFixture extends Fixture
 
         for ($i = 0; $i < 15; $i++) {
             
-            $user = new User('username' . $i, 'sample-user' . $i .'@client.com', ['ROLE_USER']);
+            $user = new User();
+
+            $user->setUsername('username' . $i);
+
+            $user->setEmail('sample-user' . $i .'@client.com');
+
+            $user->setRoles(['ROLE_USER']);
 
             $user->setClient($client);
 
