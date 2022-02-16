@@ -5,7 +5,15 @@ security:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        #users_in_memory: { memory: null }
+        # User provider
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: username
+        # JWT User provider
+        app_jwt_user_provider:
+            id: App\Security\JWTUserProvider
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -13,13 +21,17 @@ security:
         login:
             pattern: ^/login
             stateless: true
+            provider: app_user_provider
             json_login:
-                check_path: /login_check # or api_login_check as defined in config/routes.yaml
+                check_path: /login
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
         main:
             lazy: true
-            provider: users_in_memory
+            stateless: true
+            custom_authenticators:
+                - App\Security\JWTAuthenticator
+            provider: app_jwt_user_provider
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -32,6 +44,14 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/doc, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+    
+    # Role hierarchy
+    role_hierarchy:
+        ROLE_CLIENT: ROLE_USER
+        ROLE_BILEMO: [ROLE_USER, ROLE_CLIENT]
 
 when@test:
     security:
