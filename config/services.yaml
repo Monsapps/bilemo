@@ -33,4 +33,9 @@ services:
         arguments:
             - { type: 'Symfony\Component\Validator\Exception\ValidationFailedException' }
         tags: ['app.normalizer']
+    app.normalizer.jwt_decode_exception:
+        class: App\Normalizer\JWTDecodeFailureExceptionNormalizer
+        arguments:
+            - { type: 'Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException' }
+        tags: ['app.normalizer']
 

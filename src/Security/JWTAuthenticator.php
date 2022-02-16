@@ -37,14 +37,9 @@ class JWTAuthenticator extends AbstractAuthenticator
          * If JWTTokenManagerInterface can decode send to JWTUserProvider
          * 
          */
-        try {
-            $decodedJwtToken = $this->jwtEncoder->decode($jwtToken);
+        $decodedJwtToken = $this->jwtEncoder->decode($jwtToken);
 
-            return new SelfValidatingPassport(new UserBadge($decodedJwtToken['username']));
-           } catch(JWTDecodeFailureException $e) {
-
-               throw new \Exception($e->getMessage());
-           }
+        return new SelfValidatingPassport(new UserBadge($decodedJwtToken['username']));
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
