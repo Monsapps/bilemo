@@ -25,7 +25,7 @@ class JWTUserProvider implements UserProviderInterface
         return $user;
     }
 
-    public function refreshUser(UserInterface $user)
+    public function refreshUser(UserInterface $user): UserInterface
     {
         $class = get_class($user);
         if (!$this->supportsClass($class)) {
@@ -34,7 +34,7 @@ class JWTUserProvider implements UserProviderInterface
         return $user;
     }
 
-    public function supportsClass(string $class)
+    public function supportsClass(string $class): bool
     {
         return 'App\Entity\User' === $class || is_subclass_of($class, User::class);
     }

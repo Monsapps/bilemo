@@ -9,7 +9,7 @@ use OpenApi\Annotations as OA;
 class LoginController
 {
     /**
-     * @Rest\Get("/login", name="api_login_check")
+     * @Rest\Post("/login", name="api_login_check")
      * @OA\Response(
      *      response=200,
      *      description="Loging successfully.",
