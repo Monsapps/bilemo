@@ -51,7 +51,7 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
  *      ),
- *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('manage_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('get_client_details', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
  * )
  * @Hateoas\Relation(
  *      name = "modify",
@@ -60,7 +60,7 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
  *      ),
- *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('manage_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('patch_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
  * )
  * @Hateoas\Relation(
  *      name = "delete",
@@ -69,7 +69,19 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
  *      ),
- *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('manage_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('delete_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
+ * )
+ * @Hateoas\Relation(
+ *      name = "self",
+ *      href = @Hateoas\Route(
+ *          "client_user_details",
+ *          parameters = {
+ *              "client_id" = "expr(object.getClient().getId())",
+ *              "user_id" = "expr(object.getId())"
+ *          },
+ *          absolute = true
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('post_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_user_list')")
  * )
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface

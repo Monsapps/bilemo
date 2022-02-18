@@ -136,4 +136,53 @@ class ClientControllerTest extends WebTestCase
 
         return $client;
     }
+
+        public function testUserPostGoodData(): void
+    {
+        $client = $this->createAuthenticatedClient();
+
+        $data = '{
+            "username": "New user",
+            "email": "email@gmail.com",
+            "password": "password12345"
+        }';
+
+        $client->request(
+            'POST',
+            '/clients/2/users',
+            [],
+            [],
+            [],
+            $data);
+
+        $this->assertResponseStatusCodeSame(201);
+    }
+
+    public function testClientUserPatchData(): void
+    {
+        $client = $this->createAuthenticatedClient();
+
+        $data = '{
+            "username": "Updated user for client"
+        }';
+
+        $client->request(
+            'PATCH',
+            '/clients/2/users/5',
+            [],
+            [],
+            [],
+            $data);
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testClientUserDelete(): void
+    {
+        $client = $this->createAuthenticatedClient();
+
+        $client->request('DELETE', '/clients/2/users/5');
+
+        $this->assertResponseStatusCodeSame(204);
+    }
 }

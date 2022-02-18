@@ -7,9 +7,12 @@ use App\Model\User as ModelUser;
 use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+use function PHPUnit\Framework\throwException;
 
 class UserService extends BaseService
 {
@@ -59,6 +62,16 @@ class UserService extends BaseService
         return new ModelUser($pagerFanta, $this->router, 'user');
     }
 
+    public function getUserDetails(User $user, User $client = null): User
+    {
+        $user = $this->userRepo->findOneBy([
+            'id' => $user,
+            'client' => $client
+        ]);
+
+        return $user;
+    }
+
     public function addUser(array $data, User $parent = null, array $roles = null): User
     {
         $user = new User();
@@ -88,8 +101,12 @@ class UserService extends BaseService
         return $user;
     }
 
-    public function editUser(User $user, array $data)
+    public function editUser(User $user, array $data, User $parent = null): User
     {
+
+        if(isset($parent) && $user->getClient() !== $parent) {
+            return new \Exception('User and client not match', Response::HTTP_BAD_REQUEST);
+        }
 
         $this->addUserInfos($user, $data);
 
@@ -99,10 +116,16 @@ class UserService extends BaseService
 
         $entityManager->flush();
 
+        return $user;
     }
 
-    public function deleteUser(User $user): void
+    public function deleteUser(User $user, User $parent = null)
     {
+
+        if(isset($parent) && $user->getClient() !== $parent) {
+            return new \Exception('User and client not match', Response::HTTP_BAD_REQUEST);
+        }
+
         $entityManager = $this->managerRegistry->getManager();
         $entityManager->remove($user);
         $entityManager->flush();
