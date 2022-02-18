@@ -33,28 +33,49 @@ class UserService extends BaseService
         parent::__construct($validator);
     }
 
-    public function getUserList(ParamFetcherInterface $paramFetch, User $client = null)
+    public function getUserList(ParamFetcherInterface $paramFetch, User $parent = null)
     {
+
+        if(in_array('ROLE_BILEMO', $parent->getRoles())) {
+            $pagerFanta = $this->userRepo->search(
+                $paramFetch->get('keyword'),
+                $paramFetch->get('order'),
+                $paramFetch->get('limit'),
+                $paramFetch->get('page'),
+                null,
+                'ROLE_CLIENT'
+            );
+            return new ModelUser($pagerFanta, $this->router, 'client');
+        }
 
         $pagerFanta = $this->userRepo->search(
             $paramFetch->get('keyword'),
             $paramFetch->get('order'),
             $paramFetch->get('limit'),
             $paramFetch->get('page'),
-            $client
+            $parent
         );
 
-        return new ModelUser($pagerFanta, $this->router);
+        return new ModelUser($pagerFanta, $this->router, 'user');
     }
 
-    public function addUser(array $data, User $client = null, array $roles = null): User
+    public function addUser(array $data, User $parent = null, array $roles = null): User
     {
         $user = new User();
 
-        // Add roles & user when authentication
-        //$roles = ['USER_ROLE'];
+        $role = array();
 
-        $this->addUserInfos($user, $data, $client, $roles);
+        // If parent is admin he can create user and client
+        if(in_array('ROLE_BILEMO', $parent->getRoles())) {
+            $role[] = 'ROLE_USER';
+            if(null === $roles) {
+                //client have no parent
+                $parent = null;
+                $role[] = 'ROLE_CLIENT';
+            }
+        }
+
+        $this->addUserInfos($user, $data, $parent, $role);
 
         $this->entityValidator($user);
 

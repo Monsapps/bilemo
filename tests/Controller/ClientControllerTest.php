@@ -4,79 +4,69 @@ namespace App\Test\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class UserControllerTest extends WebTestCase
+class ClientControllerTest extends WebTestCase
 {
+
     private const HTTP_HOST = "bilemo.local";
 
-    public function testUserListIsUp(): void
+    public function testUserCantGetClientList(): void
     {
-        $client = $this->createAuthenticatedClient();
+        $client = $this->createAuthenticatedClient('username0', 'pass_1234');
 
-        $client->request('GET', '/users');
+        $client->request('GET', '/clients');
 
-        $this->assertResponseStatusCodeSame(200);
-
+        $this->assertResponseStatusCodeSame(403);
     }
 
-    public function testUserListJsonResponse(): void
+    public function testClientCantGetClientList(): void
     {
-        $client = $this->createAuthenticatedClient();
+        $client = $this->createAuthenticatedClient('client', 'pass_1234');
 
-        $client->request('GET', '/users');
+        $client->request('GET', '/clients');
 
-        $response = $client->getResponse();
-
-        $this->assertTrue($response->headers->contains("Content-Type", "application/json"));
+        $this->assertResponseStatusCodeSame(403);
     }
 
-    public function testUserListPagination(): void
-    {
-
-        $client = $this->createAuthenticatedClient();
-
-        $client->request('GET', '/users');
-
-        $response = $client->getResponse();
-
-        $this->assertArrayHasKey("_links", json_decode($response->getContent(), true));
-    }
-
-    public function testUserListSearch(): void
+    public function testAdminCanGetClientList(): void
     {
         $client = $this->createAuthenticatedClient();
 
-        $client->request('GET', '/users?keyword=client');
-
-        $response = $client->getResponse();
-
-        $arrayResponse = json_decode($response->getContent(), true);
-
-        $this->assertEquals(1, count($arrayResponse['data']));
-    }
-
-    public function testUserDetailsPageIsUp(): void
-    {
-
-        $client = $this->createAuthenticatedClient();
-
-        $client->request('GET', '/users/1');
+        $client->request('GET', '/clients');
 
         $this->assertResponseStatusCodeSame(200);
     }
 
-    public function testUserPostGoodData(): void
+    public function testClientDetailsIsUp(): void
+    {
+        $client = $this->createAuthenticatedClient();
+
+        $client->request('GET', '/clients/2');
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testClientDetailsWithAdminIdIsDenied(): void
+    {
+        $client = $this->createAuthenticatedClient();
+
+        $client->request('GET', '/clients/1');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testClientPostGoodData(): void
     {
         $client = $this->createAuthenticatedClient();
 
         $data = '{
-            "username": "New user",
+            "username": "New client",
             "email": "email@gmail.com",
-            "password": "password12345"
+            "password": "pass_1234"
         }';
 
         $client->request(
             'POST',
-            '/users',
+            '/clients',
             [],
             [],
             [],
@@ -85,34 +75,17 @@ class UserControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(201);
     }
 
-    public function testUserPostBadData(): void
-    {
-        $client = $this->createAuthenticatedClient();
-
-        $data = '{}';
-
-        $client->request(
-            'POST',
-            '/users',
-            [],
-            [],
-            [],
-            $data);
-
-        $this->assertResponseStatusCodeSame(400);
-    }
-
-    public function testUserPatchData(): void
+    public function testClientPatchData(): void
     {
         $client = $this->createAuthenticatedClient();
 
         $data = '{
-            "username": "Product edited"
+            "username": "Client one edited"
         }';
 
         $client->request(
             'PATCH',
-            '/users/15',
+            '/clients/2',
             [],
             [],
             [],
@@ -121,16 +94,16 @@ class UserControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
     }
 
-    public function testUserDelete(): void
+    public function testClientDelete(): void
     {
         $client = $this->createAuthenticatedClient();
 
-        $client->request('DELETE', '/users/15');
+        $client->request('DELETE', '/clients/2');
 
         $this->assertResponseStatusCodeSame(204);
     }
 
-        /**
+    /**
      * Create a client with a default Authorization header.
      *
      * @param string $username
@@ -163,6 +136,4 @@ class UserControllerTest extends WebTestCase
 
         return $client;
     }
-
-
 }

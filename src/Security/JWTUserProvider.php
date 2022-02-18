@@ -19,7 +19,7 @@ class JWTUserProvider implements UserProviderInterface
         $user = $this->userRepo->findOneBy(['username' => $identifier]);
 
         if (!$user) {
-            throw new \Exception(sprintf('Unknow username: %s' % $identifier));
+            throw new \Exception(sprintf('Unknow username: %s', $identifier));
         }
         
         return $user;

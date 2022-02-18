@@ -2,28 +2,31 @@
 
 namespace App\Controller;
 
-use App\Entity\Product;
-use App\Service\ProductService;
+use App\Entity\User;
+use App\Service\UserService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class ProductController extends AbstractController
+class ClientController extends AbstractController
 {
     /**
-     * @Rest\Get("/products", name="product_list")
+     * @Rest\Get("/clients", name="client_list")
+     * 
      * @Rest\QueryParam(
      *      name="keyword",
      *      requirements="[a-zA-Z0-9]+",
      *      nullable=true,
      *      description="The keyword search for."
      * )
+     * 
      * @Rest\QueryParam(
      *      name="order",
      *      requirements="(asc|desc)",
@@ -34,7 +37,7 @@ class ProductController extends AbstractController
      *      name="limit",
      *      requirements="\d+",
      *      default="15",
-     *      description="Max articles per page."
+     *      description="Max users per page."
      * )
      * @Rest\QueryParam(
      *      name="page",
@@ -45,59 +48,60 @@ class ProductController extends AbstractController
      * 
      * @OA\Response(
      *      response=200,
-     *      description="Get the list of all products.",
+     *      description="Get the list of all clients.",
      *      @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=App\Entity\Product::class))
+     *        @OA\Items(ref=@Model(type=App\Entity\User::class))
      *     )
      * )
-     * @OA\Tag(name="Products")
+     * @OA\Tag(name="Clients")
      */
-    public function productList(ProductService $productService, ParamFetcherInterface $paramFetch): View
+    public function clientList(ParamFetcherInterface $paramFetch, UserService $userService): View
     {
+        //TODO add client
 
-        $products = $productService->getProductList($paramFetch);
+        $users = $userService->getUserList($paramFetch, $this->getUser());
 
-        $this->denyAccessUnlessGranted('get', $products);
+        $this->denyAccessUnlessGranted('get_client', $users);
 
-        return new View($products);
+        return new View($users);
     }
 
     /**
-     * @Rest\Get("/products/{id}", name="product_details")
-     * @Rest\View(serializerGroups={"Details"})
+     * @Rest\Get("/clients/{id}", name="client_details")
+     * @Rest\View(serializerGroups={"ClientView"})
      * 
      * @OA\Response(
      *      response=200,
-     *      description="Get product details."
+     *      description="Get client details."
      * )
      * 
      * @OA\Response(
      *      response=404,
-     *      description="Returned when product not exist."
+     *      description="Returned when client not exist."
      * )
      * 
      * @OA\Parameter(
      *     name="id",
      *     in="query",
-     *     description="The unique identifier of the product.",
+     *     description="The unique identifier of the client.",
      *     @OA\Schema(type="int")
      *  )
-     * @OA\Tag(name="Products")
+     * @OA\Tag(name="Clients")
      */
-    public function productDetails(Product $product): View
+    public function clientDetails(User $user): View
     {
-        $this->denyAccessUnlessGranted('get', $product);
-        return new View($product);
+        $this->denyAccessUnlessGranted('get_client_details', $user);
+        return new View($user);
     }
 
     /**
-     * @Rest\Post("/products", name="product_post")
-     * @Rest\View(serializerGroups={"Details"})
+     * @Rest\Post("/clients", name="client_post")
+     * @Rest\View(serializerGroups={"ClientView"})
      * 
      * @OA\Response(
      *      response=201,
-     *      description="Product added successfully."
+     *      description="Client added successfully."
      * )
      * 
      * @OA\Response(
@@ -112,60 +116,54 @@ class ProductController extends AbstractController
      *                  @OA\Schema(
      *                      type="object",
      *                      @OA\Property(
-     *                          property="name",
-     *                          description="Product name.",
+     *                          property="username",
+     *                          description="Username.",
      *                          type="string",
      *                      ),
      *                      @OA\Property(
-     *                          property="brand",
-     *                          description="Product brand name.",
+     *                          property="email",
+     *                          description="Client email.",
      *                          type="string"
      *                      ),
      *                      @OA\Property(
-     *                          property="details",
-     *                          description="Product details.",
+     *                          property="password",
+     *                          description="Client password.",
      *                          type="string"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="releaseDate",
-     *                          description="Product release date.",
-     *                          type="datetime"
-     *                      ) 
+     *                      )
      *                  )
      *         )
      * )
      * 
-     * @OA\Tag(name="Products")
+     * @OA\Tag(name="Clients")
      */
-    public function productPost(ProductService $productService, Request $request): View
+    public function clientPost(UserService $userService, Request $request): View
     {
-
-        $this->denyAccessUnlessGranted('post', new Product());
+        $this->denyAccessUnlessGranted('post_client', new User());
 
         $data = json_decode($request->getContent(), true);
 
-        $product = $productService->addProduct($data);
+        $user = $userService->addUser($data, $this->getUser());
 
         return new View(
-            $product,
+            $user,
             Response::HTTP_CREATED,
             [
                 'Location' => $this->generateUrl(
-                    'product_details',
+                    'client_details',
                     [
-                        'id' => $product->getId(),
+                        'id' => $user->getId(),
                         UrlGeneratorInterface::ABSOLUTE_PATH
                     ])
             ]);
     }
 
     /**
-     * @Rest\Patch("/products/{id}", name="product_patch")
+     * @Rest\Patch("/clients/{id}", name="client_patch")
      * @Rest\View(serializerGroups={"Details"})
      * 
      * @OA\Response(
      *      response=202,
-     *      description="Product updated successfully."
+     *      description="Client updated successfully."
      * )
      * 
      * @OA\Response(
@@ -175,13 +173,13 @@ class ProductController extends AbstractController
      * 
      * @OA\Response(
      *      response=404,
-     *      description="Returned when article not exist."
+     *      description="Returned when client not exist."
      * )
      * 
      * @OA\Parameter(
      *     name="id",
      *     in="query",
-     *     description="The unique identifier of the article.",
+     *     description="The unique identifier of the client.",
      *     @OA\Schema(type="int")
      *  )
      * 
@@ -192,71 +190,64 @@ class ProductController extends AbstractController
      *                  @OA\Schema(
      *                      type="object",
      *                      @OA\Property(
-     *                          property="name",
-     *                          description="Updated product name.",
+     *                          property="username",
+     *                          description="Updated username.",
      *                          type="string",
      *                      ),
      *                      @OA\Property(
-     *                          property="brand",
-     *                          description="Updated product brand name.",
+     *                          property="email",
+     *                          description="Updated client email.",
      *                          type="string"
      *                      ),
      *                      @OA\Property(
-     *                          property="details",
-     *                          description="Updated product details.",
+     *                          property="password",
+     *                          description="Updated client password.",
      *                          type="string"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="releaseDate",
-     *                          description="Updated product release date.",
-     *                          type="datetime"
-     *                      ) 
+     *                      )
      *                  )
      *         )
      * )
-     * @OA\Tag(name="Products")
+     * @OA\Tag(name="Clients")
      */
-    public function productPatch(Product $product, Request $request, ProductService $productService): View
+    public function clientPatch(User $user, Request $request, UserService $userService): View
     {
-
-        $this->denyAccessUnlessGranted('patch', $product);
+        $this->denyAccessUnlessGranted('patch_client', $user);
 
         $data = json_decode($request->getContent(), true);
 
-        $product = $productService->editProduct($product, $data);
+        $user = $userService->editUser($user, $data);
 
         return new View(
-            $product,
+            $user,
             Response::HTTP_OK);
     }
 
     /**
-     * @Rest\Delete("/products/{id}", name="product_delete")
+     * @Rest\Delete("/clients/{id}", name="client_delete")
      * 
      * @OA\Response(
      *      response=204,
-     *      description="Product removed successfully."
+     *      description="Client removed successfully."
      * )
      * 
      * @OA\Response(
      *      response=404,
-     *      description="Returned when article not exist."
+     *      description="Returned when client not exist."
      * )
      * 
      * @OA\Parameter(
      *     name="id",
      *     in="query",
-     *     description="The unique identifier of the article.",
+     *     description="The unique identifier of the client.",
      *     @OA\Schema(type="int")
      *  )
-     * @OA\Tag(name="Products")
+     * @OA\Tag(name="Clients")
      */
-    public function productDelete(Product $product, ProductService $productService): View
+    public function clientDelete(User $user, UserService $userService)
     {
+        $this->denyAccessUnlessGranted('delete_client', $user);
 
-        $this->denyAccessUnlessGranted('delete', $product);
-
-        $productService->deleteProduct($product);
+        $userService->deleteUser($user);
 
         return new View('', Response::HTTP_NO_CONTENT);
     }

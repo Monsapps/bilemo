@@ -38,4 +38,9 @@ services:
         arguments:
             - { type: 'Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException' }
         tags: ['app.normalizer']
+    app.normalizer.access_denied:
+        class: App\Normalizer\AccessDeniedExceptionNormalizer
+        arguments:
+            - { type: 'Symfony\Component\Security\Core\Exception\AccessDeniedException' }
+        tags: ['app.normalizer']
 

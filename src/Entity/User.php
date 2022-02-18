@@ -22,7 +22,8 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          "user_details",
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
- *      )
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('get', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'user_list')")
  * )
  * @Hateoas\Relation(
  *      name = "modify",
@@ -30,7 +31,8 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          "user_patch",
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
- *      )
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('patch', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'user_list')")
  * )
  * @Hateoas\Relation(
  *      name = "delete",
@@ -38,7 +40,36 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          "user_delete",
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
- *      )
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('delete', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'user_list')")
+ * )
+ * 
+ * @Hateoas\Relation(
+ *      name = "self",
+ *      href = @Hateoas\Route(
+ *          "client_details",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('manage_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
+ * )
+ * @Hateoas\Relation(
+ *      name = "modify",
+ *      href = @Hateoas\Route(
+ *          "client_patch",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('manage_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
+ * )
+ * @Hateoas\Relation(
+ *      name = "delete",
+ *      href = @Hateoas\Route(
+ *          "client_delete",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('manage_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
  * )
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -48,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      * 
-     * @Serializer\Groups({"Default"})
+     * @Serializer\Groups({"Default", "Details"})
      */
     private $id;
 

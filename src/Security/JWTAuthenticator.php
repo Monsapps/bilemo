@@ -3,7 +3,6 @@
 namespace App\Security;
 
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,7 +33,7 @@ class JWTAuthenticator extends AbstractAuthenticator
 
         /**
          * JWT Token validation
-         * If JWTTokenManagerInterface can decode send to JWTUserProvider
+         * JWTEncoderInterface can decode send to JWTUserProvider if not throw JWTFailedDecodeException
          * 
          */
         $decodedJwtToken = $this->jwtEncoder->decode($jwtToken);
