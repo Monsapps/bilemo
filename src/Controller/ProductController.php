@@ -58,6 +58,8 @@ class ProductController extends AbstractController
 
         $products = $productService->getProductList($paramFetch);
 
+        $this->denyAccessUnlessGranted('get', $products);
+
         return new View($products);
     }
 
@@ -85,6 +87,7 @@ class ProductController extends AbstractController
      */
     public function productDetails(Product $product): View
     {
+        $this->denyAccessUnlessGranted('get', $product);
         return new View($product);
     }
 
@@ -136,6 +139,8 @@ class ProductController extends AbstractController
      */
     public function productPost(ProductService $productService, Request $request): View
     {
+
+        $this->denyAccessUnlessGranted('post', new Product());
 
         $data = json_decode($request->getContent(), true);
 
@@ -214,6 +219,8 @@ class ProductController extends AbstractController
     public function productPatch(Product $product, Request $request, ProductService $productService): View
     {
 
+        $this->denyAccessUnlessGranted('patch', $product);
+
         $data = json_decode($request->getContent(), true);
 
         $product = $productService->editProduct($product, $data);
@@ -246,6 +253,8 @@ class ProductController extends AbstractController
      */
     public function productDelete(Product $product, ProductService $productService): View
     {
+
+        $this->denyAccessUnlessGranted('delete', $product);
 
         $productService->deleteProduct($product);
 

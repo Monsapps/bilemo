@@ -48,7 +48,7 @@ class UserController extends AbstractController
      * 
      * @OA\Response(
      *      response=200,
-     *      description="Get the list of all products.",
+     *      description="Get the list of all users.",
      *      @OA\JsonContent(
      *        type="array",
      *        @OA\Items(ref=@Model(type=App\Entity\User::class))
@@ -60,7 +60,9 @@ class UserController extends AbstractController
     {
         //TODO add client
 
-        $users = $userService->getUserList($paramFetch);
+        $users = $userService->getUserList($paramFetch, $this->getUser());
+
+        $this->denyAccessUnlessGranted('get', $users);
 
         return new View($users);
     }
@@ -89,7 +91,7 @@ class UserController extends AbstractController
      */
     public function userDetails(User $user): View
     {
-        //TODO check user roles and User parent
+        $this->denyAccessUnlessGranted('get', $user);
         return new View($user);
     }
 
@@ -131,10 +133,11 @@ class UserController extends AbstractController
      */
     public function userPost(UserService $userService, Request $request): View
     {
-        // TODO test perms
+        $this->denyAccessUnlessGranted('post', new User());
+
         $data = json_decode($request->getContent(), true);
 
-        $user = $userService->addUser($data);
+        $user = $userService->addUser($data, $this->getUser());
 
         return new View(
             $user,
@@ -198,7 +201,8 @@ class UserController extends AbstractController
      */
     public function userPatch(User $user, Request $request, UserService $userService): View
     {
-        // TODO test perms
+        $this->denyAccessUnlessGranted('patch', $user);
+
         $data = json_decode($request->getContent(), true);
 
         $user = $userService->editUser($user, $data);
@@ -231,7 +235,8 @@ class UserController extends AbstractController
      */
     public function userDelete(User $user, UserService $userService)
     {
-        // TODO test perms
+        $this->denyAccessUnlessGranted('delete', $user);
+
         $userService->deleteUser($user);
 
         return new View('', Response::HTTP_NO_CONTENT);

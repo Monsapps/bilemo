@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Hateoas\Configuration\Annotation as Hateoas;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Asserts;
 
 /**
@@ -20,7 +22,8 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          "user_details",
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
- *      )
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('get', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'user_list')")
  * )
  * @Hateoas\Relation(
  *      name = "modify",
@@ -28,7 +31,8 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          "user_patch",
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
- *      )
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('patch', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'user_list')")
  * )
  * @Hateoas\Relation(
  *      name = "delete",
@@ -36,17 +40,58 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          "user_delete",
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
- *      )
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('delete', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'user_list')")
+ * )
+ * 
+ * @Hateoas\Relation(
+ *      name = "self",
+ *      href = @Hateoas\Route(
+ *          "client_details",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('get_client_details', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
+ * )
+ * @Hateoas\Relation(
+ *      name = "modify",
+ *      href = @Hateoas\Route(
+ *          "client_patch",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('patch_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
+ * )
+ * @Hateoas\Relation(
+ *      name = "delete",
+ *      href = @Hateoas\Route(
+ *          "client_delete",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('delete_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_list')")
+ * )
+ * @Hateoas\Relation(
+ *      name = "self",
+ *      href = @Hateoas\Route(
+ *          "client_user_details",
+ *          parameters = {
+ *              "client_id" = "expr(object.getClient().getId())",
+ *              "user_id" = "expr(object.getId())"
+ *          },
+ *          absolute = true
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('post_client', object) or container.get('request_stack').getCurrentRequest().get('_route') !== 'client_user_list')")
  * )
  */
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      * 
-     * @Serializer\Groups({"Default"})
+     * @Serializer\Groups({"Default", "Details"})
      */
     private $id;
 
@@ -58,6 +103,15 @@ class User
      * @Asserts\NotBlank
      */
     private $username;
+
+    /**
+     * @ORM\Column(type="string")
+     * 
+     * @Serializer\Groups({"Null"})
+     * 
+     * @Asserts\NotBlank
+     */
+    private $password;
 
     /**
      * @ORM\Column(type="string")
@@ -115,6 +169,13 @@ class User
         return $this;
     }
 
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
     public function getEmail(): string
     {
         return $this->email;
@@ -155,6 +216,19 @@ class User
         }
         
         return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->username;
+    }
+
+    public function eraseCredentials()
+    {}
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
     }
 
     public function getRoles(): array

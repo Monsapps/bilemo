@@ -13,7 +13,7 @@ class UserRepository extends BasePaginateRepository
         parent::__construct($registry, User::class);
     }
 
-    public function search(?string $keyword, string $order, int $limit, int $offset, User $client = null): Pagerfanta
+    public function search(?string $keyword, string $order, int $limit, int $offset, User $client = null, string $role = null): Pagerfanta
     {
 
         $queryBuilder = $this->createQueryBuilder('u')
@@ -24,8 +24,13 @@ class UserRepository extends BasePaginateRepository
                 ->andWhere('u.client = :client')
                 ->setParameter('client', $client)
             ;
+        }
 
-            //TODO Add search roles for admin
+        if(null !== $role) {
+            $queryBuilder
+            ->andWhere('u.roles LIKE :role')
+            ->setParameter('role', '%"'. $role .'"%')
+        ;
         }
 
         if ($keyword !== null) {

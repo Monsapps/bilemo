@@ -10,8 +10,7 @@ class ProductControllerTest extends WebTestCase
 
     public function testProductListIsUp(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/products');
 
@@ -21,8 +20,7 @@ class ProductControllerTest extends WebTestCase
 
     public function testProductListJsonResponse(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/products');
 
@@ -34,8 +32,7 @@ class ProductControllerTest extends WebTestCase
     public function testProductListPagination(): void
     {
 
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/products');
 
@@ -46,8 +43,7 @@ class ProductControllerTest extends WebTestCase
 
     public function testProductListSearch(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/products?keyword=0');
 
@@ -61,8 +57,7 @@ class ProductControllerTest extends WebTestCase
     public function testProductListPreviousPage(): void
     {
 
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/products?page=2');
 
@@ -77,8 +72,7 @@ class ProductControllerTest extends WebTestCase
     public function testProductDetailsPageIsUp(): void
     {
 
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/products/1');
 
@@ -88,8 +82,7 @@ class ProductControllerTest extends WebTestCase
     public function testProductDetailsPageContent(): void
     {
 
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/products/1');
 
@@ -97,13 +90,12 @@ class ProductControllerTest extends WebTestCase
 
         $arrayResponse = json_decode($response->getContent(), true);
 
-        $this->assertEquals('Details for product 0', $arrayResponse['details']);
+        $this->assertEquals('Details for product 1', $arrayResponse['details']);
     }
 
     public function testProductPostGoodData(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $data = '{
             "name": "Test product",
@@ -125,8 +117,7 @@ class ProductControllerTest extends WebTestCase
 
     public function testProductPostBadData(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $data = '{}';
 
@@ -144,8 +135,7 @@ class ProductControllerTest extends WebTestCase
     public function testProductPatchData(): void
     {
 
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $data = '{
             "name": "Product edited"
@@ -164,11 +154,44 @@ class ProductControllerTest extends WebTestCase
 
     public function testProductDelete(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('DELETE', '/products/1');
 
         $this->assertResponseStatusCodeSame(204);
+    }
+
+    /**
+     * Create a client with a default Authorization header.
+     *
+     * @param string $username
+     * @param string $password
+     *
+     * @return \Symfony\Bundle\FrameworkBundle\Client
+     */
+    protected function createAuthenticatedClient($username = 'admin', $password = 'pass_1234')
+    {
+        $client = static::createClient();
+
+        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+
+        $data = '{
+            "username": "'. $username .'",
+            "password": "'. $password .'"
+        }';
+
+        $client->request(
+            'POST',
+            '/login',
+            [],
+            [],
+            [],
+            $data);
+
+        $data = json_decode($client->getResponse()->getContent(), true);
+
+        $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $data['token']));
+
+        return $client;
     }
 }

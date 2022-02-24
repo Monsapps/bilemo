@@ -5,7 +5,11 @@ namespace App\Model;
 use JMS\Serializer\Annotation\Type;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
+/**
+ * @param PagerFanta $pagerFanta
+ * @param UrlGeneratorInterface $router
+ * @param string $entity for url generation [client|user]
+ */
 class User
 {
     /**
@@ -15,7 +19,7 @@ class User
     public $_links;
     public $meta;
 
-    public function __construct(Pagerfanta $pagerFanta, UrlGeneratorInterface $router)
+    public function __construct(Pagerfanta $pagerFanta, UrlGeneratorInterface $router, string $entity)
     {
         $this->data = $pagerFanta->getCurrentPageResults();
 
@@ -26,20 +30,20 @@ class User
 
         // Add Hypermedia
         if($pagerFanta->hasPreviousPage()) {
-            $this->_links['previous_page']['href'] = $router->generate('user_list', [
+            $this->_links['previous_page']['href'] = $router->generate($entity . '_list', [
                 'page' => $pagerFanta->getPreviousPage()
             ],
             UrlGeneratorInterface::ABSOLUTE_URL);
 
         }
 
-        $this->_links['current_page']['href'] = $router->generate('user_list', [
+        $this->_links['current_page']['href'] = $router->generate($entity . '_list', [
             'page' => $pagerFanta->getCurrentPage()
         ],
         UrlGeneratorInterface::ABSOLUTE_URL);
         
         if($pagerFanta->hasNextPage()) {
-            $this->_links['next_page']['href'] =  $router->generate('user_list', [
+            $this->_links['next_page']['href'] =  $router->generate($entity . '_list', [
                 'page' => $pagerFanta->getNextPage()
             ],
         UrlGeneratorInterface::ABSOLUTE_URL);

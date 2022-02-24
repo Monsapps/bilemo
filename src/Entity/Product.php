@@ -18,7 +18,8 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          "product_details",
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
- *      )
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('get', object))")
  * )
  * @Hateoas\Relation(
  *      name = "modify",
@@ -26,7 +27,8 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          "product_patch",
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
- *      )
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('patch', object))")
  * )
  * @Hateoas\Relation(
  *      name = "delete",
@@ -34,7 +36,8 @@ use Symfony\Component\Validator\Constraints as Asserts;
  *          "product_delete",
  *          parameters = { "id" = "expr(object.getId())" },
  *          absolute = true
- *      )
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(excludeIf = "expr(false === is_granted('delete', object))")
  * )
  */
 class Product

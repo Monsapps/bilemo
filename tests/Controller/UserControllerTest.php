@@ -10,8 +10,7 @@ class UserControllerTest extends WebTestCase
 
     public function testUserListIsUp(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/users');
 
@@ -21,8 +20,7 @@ class UserControllerTest extends WebTestCase
 
     public function testUserListJsonResponse(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/users');
 
@@ -34,8 +32,7 @@ class UserControllerTest extends WebTestCase
     public function testUserListPagination(): void
     {
 
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/users');
 
@@ -46,8 +43,7 @@ class UserControllerTest extends WebTestCase
 
     public function testUserListSearch(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/users?keyword=client');
 
@@ -58,27 +54,10 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals(1, count($arrayResponse['data']));
     }
 
-    public function testUserListPreviousPage(): void
-    {
-
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
-
-        $client->request('GET', '/users?page=2');
-
-        $response = $client->getResponse();
-
-        $arrayResponse = json_decode($response->getContent(), true);
-
-        $this->assertArrayHasKey("previous_page", $arrayResponse['_links']);
-
-    }
-
     public function testUserDetailsPageIsUp(): void
     {
 
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/users/1');
 
@@ -87,12 +66,12 @@ class UserControllerTest extends WebTestCase
 
     public function testUserPostGoodData(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $data = '{
             "username": "New user",
-            "email": "email@gmail.com"
+            "email": "email@gmail.com",
+            "password": "password12345"
         }';
 
         $client->request(
@@ -108,8 +87,7 @@ class UserControllerTest extends WebTestCase
 
     public function testUserPostBadData(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $data = '{}';
 
@@ -126,8 +104,7 @@ class UserControllerTest extends WebTestCase
 
     public function testUserPatchData(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $data = '{
             "username": "Product edited"
@@ -146,12 +123,45 @@ class UserControllerTest extends WebTestCase
 
     public function testUserDelete(): void
     {
-        $client = static::createClient();
-        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+        $client = $this->createAuthenticatedClient();
 
         $client->request('DELETE', '/users/15');
 
         $this->assertResponseStatusCodeSame(204);
+    }
+
+        /**
+     * Create a client with a default Authorization header.
+     *
+     * @param string $username
+     * @param string $password
+     *
+     * @return \Symfony\Bundle\FrameworkBundle\Client
+     */
+    protected function createAuthenticatedClient($username = 'admin', $password = 'pass_1234')
+    {
+        $client = static::createClient();
+
+        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+
+        $data = '{
+            "username": "'. $username .'",
+            "password": "'. $password .'"
+        }';
+
+        $client->request(
+            'POST',
+            '/login',
+            [],
+            [],
+            [],
+            $data);
+
+        $data = json_decode($client->getResponse()->getContent(), true);
+
+        $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $data['token']));
+
+        return $client;
     }
 
 
