@@ -185,4 +185,49 @@ class ClientControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(204);
     }
+
+    public function testClientUserList(): void
+    {
+        $client = $this->createAuthenticatedClient();
+
+        $client->request('GET', '/clients/2/users');
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testClientUserDetails(): void
+    {
+        $client = $this->createAuthenticatedClient();
+
+        $client->request('GET', '/clients/2/users/5');
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testAdminCanAccessToClientList(): void
+    {
+        $client = $this->createAuthenticatedClient();
+
+        $client->request('GET', '/clients');
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testClientCannotAccessToClientList(): void
+    {
+        $client = $this->createAuthenticatedClient('client','pass_1234');
+
+        $client->request('GET', '/clients');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testSimpleUserCannotAccessToClientList(): void
+    {
+        $client = $this->createAuthenticatedClient('username0','pass_1234');
+
+        $client->request('GET', '/clients');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
 }

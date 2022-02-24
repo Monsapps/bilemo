@@ -63,10 +63,7 @@ class UserVoter extends Voter
         switch($attribute) {
             case self::GET_USER:
             case self::POST_USER:
-                if ($this->security->isGranted('ROLE_BILEMO')) {
-                    return true;
-                }
-                if ($this->security->isGranted('ROLE_CLIENT')) {
+                if ($this->security->isGranted('ROLE_BILEMO') || $this->security->isGranted('ROLE_CLIENT')) {
                     return true;
                 }
                 if ($this->security->isGranted('ROLE_USER')) {
