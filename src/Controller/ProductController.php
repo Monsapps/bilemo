@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Service\CacheService;
 use App\Service\ProductService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -53,19 +53,18 @@ class ProductController extends AbstractController
      * )
      * @OA\Tag(name="Products")
      */
-    public function productList(ProductService $productService, ParamFetcherInterface $paramFetch): View
+    public function productList(ProductService $productService, ParamFetcherInterface $paramFetch, CacheService $cache): Response
     {
 
         $products = $productService->getProductList($paramFetch);
 
         $this->denyAccessUnlessGranted('get', $products);
 
-        return new View($products);
+        return $cache->getResponse($products, ['Default']);
     }
 
     /**
      * @Rest\Get("/products/{id}", name="product_details")
-     * @Rest\View(serializerGroups={"Details"})
      * 
      * @OA\Response(
      *      response=200,
@@ -85,15 +84,14 @@ class ProductController extends AbstractController
      *  )
      * @OA\Tag(name="Products")
      */
-    public function productDetails(Product $product): View
+    public function productDetails(Product $product, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('get', $product);
-        return new View($product);
+        return $cache->getResponse($product, ['Details']);
     }
 
     /**
      * @Rest\Post("/products", name="product_post")
-     * @Rest\View(serializerGroups={"Details"})
      * 
      * @OA\Response(
      *      response=201,
@@ -137,7 +135,7 @@ class ProductController extends AbstractController
      * 
      * @OA\Tag(name="Products")
      */
-    public function productPost(ProductService $productService, Request $request): View
+    public function productPost(ProductService $productService, Request $request, CacheService $cache): Response
     {
 
         $this->denyAccessUnlessGranted('post', new Product());
@@ -146,8 +144,9 @@ class ProductController extends AbstractController
 
         $product = $productService->addProduct($data);
 
-        return new View(
+        return $cache->getResponse(
             $product,
+            ['Details'],
             Response::HTTP_CREATED,
             [
                 'Location' => $this->generateUrl(
@@ -156,12 +155,11 @@ class ProductController extends AbstractController
                         'id' => $product->getId(),
                         UrlGeneratorInterface::ABSOLUTE_PATH
                     ])
-            ]);
+                    ]);
     }
 
     /**
      * @Rest\Patch("/products/{id}", name="product_patch")
-     * @Rest\View(serializerGroups={"Details"})
      * 
      * @OA\Response(
      *      response=202,
@@ -216,7 +214,7 @@ class ProductController extends AbstractController
      * )
      * @OA\Tag(name="Products")
      */
-    public function productPatch(Product $product, Request $request, ProductService $productService): View
+    public function productPatch(Product $product, Request $request, ProductService $productService, CacheService $cache): Response
     {
 
         $this->denyAccessUnlessGranted('patch', $product);
@@ -225,9 +223,7 @@ class ProductController extends AbstractController
 
         $product = $productService->editProduct($product, $data);
 
-        return new View(
-            $product,
-            Response::HTTP_OK);
+        return $cache->getResponse($product, ['Details']);
     }
 
     /**
@@ -251,13 +247,13 @@ class ProductController extends AbstractController
      *  )
      * @OA\Tag(name="Products")
      */
-    public function productDelete(Product $product, ProductService $productService): View
+    public function productDelete(Product $product, ProductService $productService, CacheService $cache): Response
     {
 
         $this->denyAccessUnlessGranted('delete', $product);
 
         $productService->deleteProduct($product);
 
-        return new View('', Response::HTTP_NO_CONTENT);
+        return $cache->getResponse('', ['Default'], Response::HTTP_NO_CONTENT);
     }
 }

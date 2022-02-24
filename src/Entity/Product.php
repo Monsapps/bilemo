@@ -47,7 +47,7 @@ class Product
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      * 
-     * @Serializer\Groups({"Default"})
+     * @Serializer\Groups({"Default", "Details"})
      * 
      * @OA\Property(
      *      type="integer",
