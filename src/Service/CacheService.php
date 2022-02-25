@@ -17,9 +17,9 @@ class CacheService
         $this->serializer = $serializer;
     }
 
-    public function getResponse(mixed $data, array $groups = ['Default'], int $statusCode = Response::HTTP_OK, array $headers = null): Response
+    public function getResponse(mixed $data, array $groups = ['Default'], int $statusCode = Response::HTTP_OK, array $headers = []): Response
     {
-        $response = new Response($this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups($groups)), $statusCode);
+        $response = new Response($this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups($groups)), $statusCode, $headers);
 
         $response->setPublic();
         $response->setMaxAge(self::HTTP_CACHE_MAX_AGE);
