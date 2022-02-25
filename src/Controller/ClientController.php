@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\CacheService;
 use App\Service\UserService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\View;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -57,20 +57,18 @@ class ClientController extends AbstractController
      * )
      * @OA\Tag(name="Clients")
      */
-    public function clientList(ParamFetcherInterface $paramFetch, UserService $userService): View
+    public function clientList(ParamFetcherInterface $paramFetch, UserService $userService, CacheService $cache): Response
     {
-        //TODO add client
 
         $users = $userService->getUserList($paramFetch, $this->getUser());
 
         $this->denyAccessUnlessGranted('get_client', $users);
 
-        return new View($users);
+        return $cache->getResponse($users);
     }
 
     /**
      * @Rest\Get("/clients/{id}", name="client_details")
-     * @Rest\View(serializerGroups={"ClientView"})
      * 
      * @OA\Response(
      *      response=200,
@@ -90,15 +88,14 @@ class ClientController extends AbstractController
      *  )
      * @OA\Tag(name="Clients")
      */
-    public function clientDetails(User $user): View
+    public function clientDetails(User $user, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('get_client_details', $user);
-        return new View($user);
+        return $cache->getResponse($user, ['ClientView']);
     }
 
     /**
      * @Rest\Post("/clients", name="client_post")
-     * @Rest\View(serializerGroups={"ClientView"})
      * 
      * @OA\Response(
      *      response=201,
@@ -137,7 +134,7 @@ class ClientController extends AbstractController
      * 
      * @OA\Tag(name="Clients")
      */
-    public function clientPost(UserService $userService, Request $request): View
+    public function clientPost(UserService $userService, Request $request, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('post_client', new User());
 
@@ -145,8 +142,9 @@ class ClientController extends AbstractController
 
         $user = $userService->addUser($data, $this->getUser());
 
-        return new View(
+        return $cache->getResponse(
             $user,
+            ['ClientView'],
             Response::HTTP_CREATED,
             [
                 'Location' => $this->generateUrl(
@@ -160,7 +158,6 @@ class ClientController extends AbstractController
 
     /**
      * @Rest\Patch("/clients/{id}", name="client_patch")
-     * @Rest\View(serializerGroups={"Details"})
      * 
      * @OA\Response(
      *      response=202,
@@ -210,7 +207,7 @@ class ClientController extends AbstractController
      * )
      * @OA\Tag(name="Clients")
      */
-    public function clientPatch(User $user, Request $request, UserService $userService): View
+    public function clientPatch(User $user, Request $request, UserService $userService, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('patch_client', $user);
 
@@ -218,8 +215,9 @@ class ClientController extends AbstractController
 
         $user = $userService->editUser($user, $data);
 
-        return new View(
+        return $cache->getResponse(
             $user,
+            ['Details'],
             Response::HTTP_OK);
     }
 
@@ -244,13 +242,13 @@ class ClientController extends AbstractController
      *  )
      * @OA\Tag(name="Clients")
      */
-    public function clientDelete(User $user, UserService $userService)
+    public function clientDelete(User $user, UserService $userService, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('delete_client', $user);
 
         $userService->deleteUser($user);
 
-        return new View('', Response::HTTP_NO_CONTENT);
+        return $cache->getResponse('', ['Default'], Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -299,14 +297,13 @@ class ClientController extends AbstractController
      * )
      * @OA\Tag(name="Clients")
      */
-    public function clientUserList(User $user, ParamFetcherInterface $paramFetch, UserService $userService): View
+    public function clientUserList(User $user, ParamFetcherInterface $paramFetch, UserService $userService, CacheService $cache): Response
     {
-
         $users = $userService->getUserList($paramFetch, $user);
 
         $this->denyAccessUnlessGranted('get_client', $users);
 
-        return new View($users);
+        return $cache->getResponse($users);
     }
 
     /**
@@ -338,17 +335,16 @@ class ClientController extends AbstractController
      * )
      * @OA\Tag(name="Clients")
      */
-    public function clientUserDetails(User $client, User $user, UserService $userService): View
+    public function clientUserDetails(User $client, User $user, UserService $userService, CacheService $cache): Response
     {
         $user = $userService->getUserDetails($user, $client);
 
         $this->denyAccessUnlessGranted('post_client', $user);
-        return new View($user);
+        return $cache->getResponse($user);
     }
 
     /**
      * @Rest\Post("/clients/{id}/users", name="client_user_post")
-     * @Rest\View(serializerGroups={"ClientView"})
      * 
      * @OA\Parameter(
      *     name="id",
@@ -394,7 +390,7 @@ class ClientController extends AbstractController
      * 
      * @OA\Tag(name="Clients")
      */
-    public function clientUserPost(User $client, UserService $userService, Request $request): View
+    public function clientUserPost(User $client, UserService $userService, Request $request, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('post_client', new User());
 
@@ -402,8 +398,9 @@ class ClientController extends AbstractController
 
         $user = $userService->addUser($data, $client);
 
-        return new View(
+        return $cache->getResponse(
             $user,
+            ['ClientView'],
             Response::HTTP_CREATED,
             [
                 'Location' => $this->generateUrl(
@@ -418,7 +415,6 @@ class ClientController extends AbstractController
 
         /**
      * @Rest\Patch("/clients/{client_id}/users/{user_id}", name="client_user_patch")
-     * @Rest\View(serializerGroups={"Details"})
      * 
      * @ParamConverter("client", options={"id" = "client_id"})
      * 
@@ -477,7 +473,7 @@ class ClientController extends AbstractController
      * )
      * @OA\Tag(name="Clients")
      */
-    public function clientUserPatch(User $user, User $client, Request $request, UserService $userService): View
+    public function clientUserPatch(User $user, User $client, Request $request, UserService $userService, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('post_client', $user);
 
@@ -485,8 +481,9 @@ class ClientController extends AbstractController
 
         $user = $userService->editUser($user, $data, $client);
 
-        return new View(
+        return $cache->getResponse(
             $user,
+            ['Details'],
             Response::HTTP_OK);
     }
 
@@ -520,12 +517,12 @@ class ClientController extends AbstractController
      *  )
      * @OA\Tag(name="Clients")
      */
-    public function clientUserDelete(User $user, User $client, UserService $userService)
+    public function clientUserDelete(User $user, User $client, UserService $userService, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('post_client', $user);
 
         $userService->deleteUser($user, $client);
 
-        return new View('', Response::HTTP_NO_CONTENT);
+        return $cache->getResponse('', ['Default'], Response::HTTP_NO_CONTENT);
     }
 }

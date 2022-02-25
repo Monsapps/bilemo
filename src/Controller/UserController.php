@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\CacheService;
 use App\Service\UserService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\View;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
@@ -56,20 +56,18 @@ class UserController extends AbstractController
      * )
      * @OA\Tag(name="Users")
      */
-    public function userList(ParamFetcherInterface $paramFetch, UserService $userService): View
+    public function userList(ParamFetcherInterface $paramFetch, UserService $userService, CacheService $cache): Response
     {
-        //TODO add client
 
         $users = $userService->getUserList($paramFetch, $this->getUser());
 
         $this->denyAccessUnlessGranted('get', $users);
 
-        return new View($users);
+        return $cache->getResponse($users);
     }
 
     /**
      * @Rest\Get("/users/{id}", name="user_details")
-     * @Rest\View(serializerGroups={"ClientView"})
      * 
      * @OA\Response(
      *      response=200,
@@ -89,15 +87,14 @@ class UserController extends AbstractController
      *  )
      * @OA\Tag(name="Users")
      */
-    public function userDetails(User $user): View
+    public function userDetails(User $user, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('get', $user);
-        return new View($user);
+        return $cache->getResponse($user, ['ClientView']);
     }
 
     /**
      * @Rest\Post("/users", name="user_post")
-     * @Rest\View(serializerGroups={"ClientView"})
      * 
      * @OA\Response(
      *      response=201,
@@ -131,7 +128,7 @@ class UserController extends AbstractController
      * 
      * @OA\Tag(name="Users")
      */
-    public function userPost(UserService $userService, Request $request): View
+    public function userPost(UserService $userService, Request $request, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('post', new User());
 
@@ -139,8 +136,9 @@ class UserController extends AbstractController
 
         $user = $userService->addUser($data, $this->getUser());
 
-        return new View(
+        return $cache->getResponse(
             $user,
+            ['ClientView'],
             Response::HTTP_CREATED,
             [
                 'Location' => $this->generateUrl(
@@ -154,7 +152,6 @@ class UserController extends AbstractController
 
     /**
      * @Rest\Patch("/users/{id}", name="user_patch")
-     * @Rest\View(serializerGroups={"Details"})
      * 
      * @OA\Response(
      *      response=202,
@@ -199,7 +196,7 @@ class UserController extends AbstractController
      * )
      * @OA\Tag(name="Users")
      */
-    public function userPatch(User $user, Request $request, UserService $userService): View
+    public function userPatch(User $user, Request $request, UserService $userService, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('patch', $user);
 
@@ -207,8 +204,9 @@ class UserController extends AbstractController
 
         $user = $userService->editUser($user, $data);
 
-        return new View(
+        return $cache->getResponse(
             $user,
+            ['Details'],
             Response::HTTP_OK);
     }
 
@@ -233,12 +231,12 @@ class UserController extends AbstractController
      *  )
      * @OA\Tag(name="Users")
      */
-    public function userDelete(User $user, UserService $userService)
+    public function userDelete(User $user, UserService $userService, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('delete', $user);
 
         $userService->deleteUser($user);
 
-        return new View('', Response::HTTP_NO_CONTENT);
+        return $cache->getResponse('', ['Default'], Response::HTTP_NO_CONTENT);
     }
 }
