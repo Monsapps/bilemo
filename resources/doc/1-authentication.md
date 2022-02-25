@@ -33,10 +33,9 @@ Some credentials for testing (loaded by doctrine fixtures)
 ```text
 BILEMO_ROLE -> admin:pass_1234
 CLIENT_ROLE -> client:pass_1234
-USER_ROLE -> username0;pass_1234
+USER_ROLE -> username0:pass_1234
 ```
 
 ### 2. Use the token
 
-Simply pass the JWT on each request, either as an authorization header
-or as a query parameter : `Authorization: Bearer {token}`
+Simply pass the JWT on each request, on authorization header : `Authorization: Bearer {token}`

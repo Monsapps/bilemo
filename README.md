@@ -54,4 +54,7 @@ SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
 ## Documentation
 
-*   [Authentication](resources/doc/1-authentication.md.md)
+*   [Authentication](resources/doc/1-authentication.md)
+*   [Common endpoints](resources/doc/2-common-endpoints.md)
+*   [Client endpoints](resources/doc/3-client-endpoints.md)
+*   [Admin endpoints](resources/doc/4-admin-endpoints.md)
