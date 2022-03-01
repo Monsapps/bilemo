@@ -206,7 +206,7 @@ class UserController extends AbstractController
 
         return $cache->getResponse(
             $user,
-            ['Details'],
+            ['ClientView'],
             Response::HTTP_OK);
     }
 

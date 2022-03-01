@@ -23,8 +23,11 @@ class JWTAuthenticator extends AbstractAuthenticator
 
     public function supports(Request $request): ?bool
     {
-        return $request->headers->has('Authorization')
-            && 0 === strpos($request->headers->get('Authorization'), 'Bearer ');
+        if($request->headers->has('Authorization')
+        && 0 === strpos($request->headers->get('Authorization'), 'Bearer ')) {
+            return true;
+        }
+        return false;
     }
 
     public function authenticate(Request $request): Passport
@@ -48,7 +51,7 @@ class JWTAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return new Response("Authentication Failed.", Response::HTTP_UNAUTHORIZED);
+        return new Response("Authentication Failed.", Response::HTTP_FORBIDDEN);
     }
 
 }

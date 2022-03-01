@@ -121,6 +121,25 @@ class UserControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
     }
 
+    public function testClientCantPatchDataOnOtherClient(): void
+    {
+        $client = $this->createAuthenticatedClient('client', 'pass_1234');
+
+        $data = '{
+            "username": "Product edited"
+        }';
+
+        $client->request(
+            'PATCH',
+            '/users/1',
+            [],
+            [],
+            [],
+            $data);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
     public function testUserDelete(): void
     {
         $client = $this->createAuthenticatedClient();
@@ -128,6 +147,48 @@ class UserControllerTest extends WebTestCase
         $client->request('DELETE', '/users/15');
 
         $this->assertResponseStatusCodeSame(204);
+    }
+
+    public function testClientCantDeleteOtherUserClient(): void
+    {
+        $client = $this->createAuthenticatedClient('client', 'pass_1234');
+
+        $client->request('DELETE', '/users/1');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testUserRoleCantGetUserList(): void
+    {
+        $client = $this->createAuthenticatedClient('username0', 'pass_1234');
+
+        $client->request('GET', '/users');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testUserRoleCantDeleteUser(): void
+    {
+        $client = $this->createAuthenticatedClient('username0', 'pass_1234');
+
+        $client->request('DELETE', '/users/15');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testUserListPreviousPage(): void
+    {
+
+        $client = $this->createAuthenticatedClient('client', 'pass_1234');
+
+        $client->request('GET', '/users?page=2&limit=5');
+
+        $response = $client->getResponse();
+
+        $arrayResponse = json_decode($response->getContent(), true);
+
+        $this->assertArrayHasKey("previous_page", $arrayResponse['_links']);
+
     }
 
         /**
@@ -163,6 +224,4 @@ class UserControllerTest extends WebTestCase
 
         return $client;
     }
-
-
 }

@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Repository\UserRepository;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -19,7 +20,7 @@ class JWTUserProvider implements UserProviderInterface
         $user = $this->userRepo->findOneBy(['username' => $identifier]);
 
         if (!$user) {
-            throw new \Exception(sprintf('Unknow username: %s', $identifier), 403);
+            throw new AccessDeniedException(sprintf('Unknow username: %s', $identifier));
         }
         
         return $user;

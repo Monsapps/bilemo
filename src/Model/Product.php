@@ -9,14 +9,12 @@ use JMS\Serializer\Annotation\Type;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class Product
+class Product extends AbstractModel
 {
     /**
      * @Type(value="array<App\Entity\Product>")
      */
     public $data;
-    public $_links;
-    public $meta;
 
     public function __construct(Pagerfanta $pagerFanta, UrlGeneratorInterface $router)
     {
@@ -47,20 +45,6 @@ class Product
             ],
         UrlGeneratorInterface::ABSOLUTE_URL);
         }
-    }
-
-    public function addMeta($name, $value)
-    {
-        if (isset($this->meta[$name])) {
-            throw new \LogicException(sprintf('This meta already exists. You are trying to override this meta, use the setMeta method instead for the %s meta.', $name));
-        }
-        
-        $this->setMeta($name, $value);
-    }
-    
-    public function setMeta($name, $value)
-    {
-        $this->meta[$name] = $value;
     }
 
 }

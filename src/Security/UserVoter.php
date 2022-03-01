@@ -111,7 +111,7 @@ class UserVoter extends Voter
 
     private function isParent(User $user, User $client)
     {
-        if(($user->getClient() === $client)) {
+        if($user->getClient() !== null && $user->getClient() == $client) {
             return true;
         }
         return false;

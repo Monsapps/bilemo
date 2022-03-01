@@ -10,14 +10,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * @param UrlGeneratorInterface $router
  * @param string $entity for url generation [client|user]
  */
-class User
+class User extends AbstractModel
 {
     /**
      * @Type(value="array<App\Entity\User>")
      */
     public $data;
-    public $_links;
-    public $meta;
 
     public function __construct(Pagerfanta $pagerFanta, UrlGeneratorInterface $router, string $entity)
     {
@@ -50,17 +48,4 @@ class User
         }
     }
 
-    public function addMeta($name, $value)
-    {
-        if (isset($this->meta[$name])) {
-            throw new \LogicException(sprintf('This meta already exists. You are trying to override this meta, use the setMeta method instead for the %s meta.', $name));
-        }
-        
-        $this->setMeta($name, $value);
-    }
-    
-    public function setMeta($name, $value)
-    {
-        $this->meta[$name] = $value;
-    }
 }

@@ -12,7 +12,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-use function PHPUnit\Framework\throwException;
 
 class UserService extends BaseService
 {
@@ -104,9 +103,9 @@ class UserService extends BaseService
     public function editUser(User $user, array $data, User $parent = null): User
     {
 
-        if(isset($parent) && $user->getClient() !== $parent) {
+        /*if(isset($parent) && $user->getClient() != $parent) {
             return new \Exception('User and client not match', Response::HTTP_BAD_REQUEST);
-        }
+        }*/
 
         $this->addUserInfos($user, $data);
 
@@ -122,9 +121,9 @@ class UserService extends BaseService
     public function deleteUser(User $user, User $parent = null)
     {
 
-        if(isset($parent) && $user->getClient() !== $parent) {
+        /*if(isset($parent) && $user->getClient() !== $parent) {
             return new \Exception('User and client not match', Response::HTTP_BAD_REQUEST);
-        }
+        }*/
 
         $entityManager = $this->managerRegistry->getManager();
         $entityManager->remove($user);
