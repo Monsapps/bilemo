@@ -78,7 +78,7 @@ class LoginControllerTest extends WebTestCase
 
         $client->request('GET', '/products');
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        //$response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertResponseStatusCodeSame(403);
     }

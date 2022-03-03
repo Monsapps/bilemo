@@ -140,7 +140,7 @@ class ClientController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        $user = $userService->addUser($data, $this->getUser());
+        $user = $userService->addUser($data, $this->getUser(), ['ROLE_CLIENT']);
 
         return $cache->getResponse(
             $user,
