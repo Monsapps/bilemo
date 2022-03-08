@@ -48,7 +48,7 @@ class ProductController extends AbstractController
      *      description="Get the list of all products.",
      *      @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=App\Entity\Product::class))
+     *        @OA\Items(ref=@Model(type=App\Entity\Product::class, groups={"Default"}))
      *     )
      * )
      * @OA\Tag(name="Products")

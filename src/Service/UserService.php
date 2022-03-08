@@ -77,7 +77,7 @@ class UserService extends BaseService
 
         $role = array();
 
-        // If parent is admin he can create user and client
+        // If parent is admin he can create own user and client
         if(in_array('ROLE_BILEMO', $parent->getRoles())) {
             $role[] = 'ROLE_USER';
             if(null !== $roles) {

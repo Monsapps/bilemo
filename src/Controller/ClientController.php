@@ -52,7 +52,7 @@ class ClientController extends AbstractController
      *      description="Get the list of all clients.",
      *      @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=App\Entity\User::class))
+     *        @OA\Items(ref=@Model(type=App\Entity\User::class, groups={"Default"}))
      *     )
      * )
      * @OA\Tag(name="Clients")
@@ -292,7 +292,7 @@ class ClientController extends AbstractController
      *      description="Get the list of all clients.",
      *      @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=App\Entity\User::class))
+     *        @OA\Items(ref=@Model(type=App\Entity\User::class, groups={"Default"}))
      *     )
      * )
      * @OA\Tag(name="Clients")
@@ -330,7 +330,7 @@ class ClientController extends AbstractController
      *      description="Get the list of all clients.",
      *      @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=App\Entity\User::class))
+     *        @OA\Items(ref=@Model(type=App\Entity\User::class, groups={"Default"}))
      *     )
      * )
      * @OA\Tag(name="Clients")

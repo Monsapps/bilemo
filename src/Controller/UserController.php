@@ -51,7 +51,7 @@ class UserController extends AbstractController
      *      description="Get the list of all users.",
      *      @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=App\Entity\User::class))
+     *        @OA\Items(ref=@Model(type=App\Entity\User::class, groups={"Default"}))
      *     )
      * )
      * @OA\Tag(name="Users")

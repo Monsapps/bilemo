@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class ExceptionSubscriberTest extends TestCase
 {
 
-    public function testEventSubscription()
+    public function testEventSubscription(): void
     {
         $this->assertArrayHasKey(KernelEvents::EXCEPTION, ExceptionSubscriber::getSubscribedEvents());
     }
