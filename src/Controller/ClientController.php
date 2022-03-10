@@ -91,7 +91,7 @@ class ClientController extends AbstractController
     public function clientDetails(User $user, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('get_client_details', $user);
-        return $cache->getResponse($user, ['ClientView']);
+        return $cache->getResponse($user, ['Default']);
     }
 
     /**
@@ -144,7 +144,7 @@ class ClientController extends AbstractController
 
         return $cache->getResponse(
             $user,
-            ['ClientView'],
+            ['Default'],
             Response::HTTP_CREATED,
             [
                 'Location' => $this->generateUrl(
@@ -299,6 +299,9 @@ class ClientController extends AbstractController
      */
     public function clientUserList(User $user, ParamFetcherInterface $paramFetch, UserService $userService, CacheService $cache): Response
     {
+
+        $this->denyAccessUnlessGranted('get_client_details', $user);
+
         $users = $userService->getUserList($paramFetch, $user);
 
         $this->denyAccessUnlessGranted('get_client', $users);
@@ -309,6 +312,7 @@ class ClientController extends AbstractController
     /**
      * @Rest\Get("/clients/{client_id}/users/{user_id}", name="client_user_details")
      * 
+     * @ParamConverter("user", options={"id" = "user_id"})
      * @ParamConverter("client", options={"id" = "client_id"})
      * 
      * @OA\Parameter(
@@ -337,6 +341,8 @@ class ClientController extends AbstractController
      */
     public function clientUserDetails(User $client, User $user, UserService $userService, CacheService $cache): Response
     {
+        $this->denyAccessUnlessGranted('get_client_details', $client);
+
         $user = $userService->getUserDetails($user, $client);
 
         $this->denyAccessUnlessGranted('post_client', $user);
@@ -400,7 +406,7 @@ class ClientController extends AbstractController
 
         return $cache->getResponse(
             $user,
-            ['ClientView'],
+            ['Default'],
             Response::HTTP_CREATED,
             [
                 'Location' => $this->generateUrl(
@@ -416,6 +422,7 @@ class ClientController extends AbstractController
         /**
      * @Rest\Patch("/clients/{client_id}/users/{user_id}", name="client_user_patch")
      * 
+     * @ParamConverter("user", options={"id" = "user_id"})
      * @ParamConverter("client", options={"id" = "client_id"})
      * 
      * @OA\Response(
@@ -475,6 +482,8 @@ class ClientController extends AbstractController
      */
     public function clientUserPatch(User $user, User $client, Request $request, UserService $userService, CacheService $cache): Response
     {
+        $this->denyAccessUnlessGranted('get_client_details', $client);
+
         $this->denyAccessUnlessGranted('post_client', $user);
 
         $data = json_decode($request->getContent(), true);
@@ -483,7 +492,7 @@ class ClientController extends AbstractController
 
         return $cache->getResponse(
             $user,
-            ['Details'],
+            ['Default'],
             Response::HTTP_OK);
     }
 

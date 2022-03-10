@@ -64,7 +64,7 @@ class UserService extends BaseService
     public function getUserDetails(User $user, User $client = null): User
     {
         $user = $this->userRepo->findOneBy([
-            'id' => $user,
+            'id' => $user->getId(),
             'client' => $client
         ]);
 
