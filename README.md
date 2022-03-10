@@ -1,5 +1,5 @@
 # Bilemo API project
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1cb9821185054b9c8cc5302f53dd76d8)](https://www.codacy.com/gh/Monsapps/bilemo-api/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Monsapps/bilemo-api&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1cb9821185054b9c8cc5302f53dd76d8)](https://www.codacy.com/gh/Monsapps/bilemo-api/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Monsapps/bilemo-api&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/1cb9821185054b9c8cc5302f53dd76d8)](https://www.codacy.com/gh/Monsapps/bilemo-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=Monsapps/bilemo-api&utm_campaign=Badge_Coverage)
 
 ## Installation
 
