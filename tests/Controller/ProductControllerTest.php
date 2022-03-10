@@ -161,6 +161,24 @@ class ProductControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(204);
     }
 
+    public function testUserCanGetProductList(): void
+    {
+        $client = $this->createAuthenticatedClient('username0', 'pass_1234');
+
+        $client->request('GET', '/products');
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testClientCanGetProductList(): void
+    {
+        $client = $this->createAuthenticatedClient('client', 'pass_1234');
+
+        $client->request('GET', '/products');
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
     /**
      * Create a client with a default Authorization header.
      *

@@ -51,10 +51,7 @@ class ProductVoter extends Voter
 
         switch($attribute) {
             case self::GET: 
-                if ($this->security->isGranted('ROLE_USER')) {
-                    return true;
-                }
-                if ($this->security->isGranted('ROLE_CLIENT')) {
+                if ($this->security->isGranted('ROLE_USER') || $this->security->isGranted('ROLE_CLIENT')) {
                     return true;
                 }
             case self::PATCH:

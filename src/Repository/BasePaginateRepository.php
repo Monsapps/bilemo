@@ -15,13 +15,9 @@ abstract class BasePaginateRepository extends ServiceEntityRepository
     protected function paginate(QueryBuilder $queryBuilder, int $limit, int $offset): Pagerfanta
     {
 
-        if (0 == $limit) {
-            throw new \LogicException('$limit must be greater than 0.');
-        }
-
         $pager = new Pagerfanta(new QueryAdapter($queryBuilder));
         $pager->setCurrentPage($offset);
-        $pager->setMaxPerPage((int) $limit);
+        $pager->setMaxPerPage($limit);
         
         return $pager;
     }

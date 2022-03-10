@@ -188,7 +188,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getClient(): User
+    public function getClient(): ?User
     {
         return $this->client;
     }

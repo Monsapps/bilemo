@@ -12,7 +12,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-use function PHPUnit\Framework\throwException;
 
 class UserService extends BaseService
 {
@@ -65,7 +64,7 @@ class UserService extends BaseService
     public function getUserDetails(User $user, User $client = null): User
     {
         $user = $this->userRepo->findOneBy([
-            'id' => $user,
+            'id' => $user->getId(),
             'client' => $client
         ]);
 
@@ -78,13 +77,13 @@ class UserService extends BaseService
 
         $role = array();
 
-        // If parent is admin he can create user and client
+        // If parent is admin he can create own user and client
         if(in_array('ROLE_BILEMO', $parent->getRoles())) {
             $role[] = 'ROLE_USER';
-            if(null === $roles) {
+            if(null !== $roles) {
                 //client have no parent
                 $parent = null;
-                $role[] = 'ROLE_CLIENT';
+                $role = $roles;
             }
         }
 
@@ -105,7 +104,7 @@ class UserService extends BaseService
     {
 
         if(isset($parent) && $user->getClient() !== $parent) {
-            return new \Exception('User and client not match', Response::HTTP_BAD_REQUEST);
+            throw new \Exception('User and client not match', Response::HTTP_BAD_REQUEST);
         }
 
         $this->addUserInfos($user, $data);
@@ -123,7 +122,7 @@ class UserService extends BaseService
     {
 
         if(isset($parent) && $user->getClient() !== $parent) {
-            return new \Exception('User and client not match', Response::HTTP_BAD_REQUEST);
+            throw new \Exception('User and client not match', Response::HTTP_BAD_REQUEST);
         }
 
         $entityManager = $this->managerRegistry->getManager();

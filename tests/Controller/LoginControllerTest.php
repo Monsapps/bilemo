@@ -67,4 +67,69 @@ class LoginControllerTest extends WebTestCase
 
         $this->assertEquals('Invalid JWT Token', $response['message']);
     }
+
+    public function testNoJwt(): void
+    {
+        $client = static::createClient([], [
+            'HTTP_HOST' => self::HTTP_HOST,
+            'CONTENT_TYPE' => 'application/ld+json',
+            'HTTP_ACCEPT' => 'application/ld+json'
+        ]);
+
+        $client->request('GET', '/products');
+
+        //$response = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+
+    public function testDeleteUserCannotAccess(): void
+    {
+        $client = static::createClient();
+
+        //Get token for futur ex user
+        $client->setServerParameter("HTTP_HOST", self::HTTP_HOST);
+
+        $data = '{
+            "username": "username0",
+            "password": "pass_1234"
+        }';
+
+        $client->request(
+            'POST',
+            '/login',
+            [],
+            [],
+            [],
+            $data);
+
+        $oldUserResponse = json_decode($client->getResponse()->getContent(), true);
+
+        $data = '{
+            "username": "admin",
+            "password": "pass_1234"
+        }';
+
+        $client->request(
+            'POST',
+            '/login',
+            [],
+            [],
+            [],
+            $data);
+
+        $adminResponse = json_decode($client->getResponse()->getContent(), true);
+        $client->setServerParameter('HTTP_AUTHORIZATION', sprintf('Bearer %s', $adminResponse['token']));
+
+        $client->request('DELETE', '/users/3');
+
+        $this->assertResponseStatusCodeSame(204);
+
+        $client->setServerParameter('HTTP_AUTHORIZATION', sprintf('Bearer %s', $oldUserResponse['token']));
+
+        $client->request('GET', '/products');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
 }

@@ -51,7 +51,7 @@ class UserController extends AbstractController
      *      description="Get the list of all users.",
      *      @OA\JsonContent(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=App\Entity\User::class))
+     *        @OA\Items(ref=@Model(type=App\Entity\User::class, groups={"Default"}))
      *     )
      * )
      * @OA\Tag(name="Users")
@@ -90,7 +90,7 @@ class UserController extends AbstractController
     public function userDetails(User $user, CacheService $cache): Response
     {
         $this->denyAccessUnlessGranted('get', $user);
-        return $cache->getResponse($user, ['ClientView']);
+        return $cache->getResponse($user, ['Default']);
     }
 
     /**
@@ -138,7 +138,7 @@ class UserController extends AbstractController
 
         return $cache->getResponse(
             $user,
-            ['ClientView'],
+            ['Default'],
             Response::HTTP_CREATED,
             [
                 'Location' => $this->generateUrl(
@@ -206,7 +206,7 @@ class UserController extends AbstractController
 
         return $cache->getResponse(
             $user,
-            ['Details'],
+            ['Default'],
             Response::HTTP_OK);
     }
 
