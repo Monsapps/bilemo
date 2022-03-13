@@ -137,7 +137,7 @@ class UserControllerTest extends WebTestCase
             [],
             $data);
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testUserDelete(): void
@@ -155,7 +155,7 @@ class UserControllerTest extends WebTestCase
 
         $client->request('DELETE', '/users/1');
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testUserRoleCantGetUserList(): void
@@ -164,7 +164,7 @@ class UserControllerTest extends WebTestCase
 
         $client->request('GET', '/users');
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testUserRoleCantDeleteUser(): void
@@ -173,7 +173,7 @@ class UserControllerTest extends WebTestCase
 
         $client->request('DELETE', '/users/15');
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testUserListPreviousPage(): void

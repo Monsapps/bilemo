@@ -80,7 +80,7 @@ class LoginControllerTest extends WebTestCase
 
         //$response = json_decode($client->getResponse()->getContent(), true);
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(401);
     }
 
 
@@ -130,6 +130,6 @@ class LoginControllerTest extends WebTestCase
 
         $client->request('GET', '/products');
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(401);
     }
 }

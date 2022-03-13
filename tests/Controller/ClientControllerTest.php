@@ -15,7 +15,7 @@ class ClientControllerTest extends WebTestCase
 
         $client->request('GET', '/clients');
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testClientCantGetClientList(): void
@@ -24,7 +24,7 @@ class ClientControllerTest extends WebTestCase
 
         $client->request('GET', '/clients');
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testAdminCanGetClientList(): void
@@ -51,7 +51,7 @@ class ClientControllerTest extends WebTestCase
 
         $client->request('GET', '/clients/1');
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testClientPostGoodData(): void
@@ -219,7 +219,7 @@ class ClientControllerTest extends WebTestCase
 
         $client->request('GET', '/clients');
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testSimpleUserCannotAccessToClientList(): void
@@ -228,6 +228,6 @@ class ClientControllerTest extends WebTestCase
 
         $client->request('GET', '/clients');
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(401);
     }
 }
