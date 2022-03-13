@@ -71,7 +71,7 @@ class UserService extends BaseService
         return $user;
     }
 
-    public function addUser(array $data, User $parent = null, array $roles = null): User
+    public function addUser($data, User $parent = null, array $roles = null): User
     {
         $user = new User();
 
@@ -87,6 +87,11 @@ class UserService extends BaseService
             }
         }
 
+        // if json_decode return null
+        if(is_null($data)) {
+            throw new \Exception('Invalid json body data.', Response::HTTP_BAD_REQUEST);
+        }
+
         $this->addUserInfos($user, $data, $parent, $role);
 
         $this->entityValidator($user);
@@ -100,11 +105,16 @@ class UserService extends BaseService
         return $user;
     }
 
-    public function editUser(User $user, array $data, User $parent = null): User
+    public function editUser(User $user, $data, User $parent = null): User
     {
 
         if(isset($parent) && $user->getClient() !== $parent) {
             throw new \Exception('User and client not match', Response::HTTP_BAD_REQUEST);
+        }
+
+        // if json_decode return null
+        if(is_null($data)) {
+            throw new \Exception('Invalid json body data.', Response::HTTP_BAD_REQUEST);
         }
 
         $this->addUserInfos($user, $data);
