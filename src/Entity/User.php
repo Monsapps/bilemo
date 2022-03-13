@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Hateoas\Configuration\Annotation as Hateoas;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Asserts;
@@ -15,6 +16,11 @@ use Symfony\Component\Validator\Constraints as Asserts;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table
+ * 
+ * @UniqueEntity(
+ *      fields={"username"},
+ *      errorPath="username",
+ *      message="Username already exist")
  * 
  * @Hateoas\Relation(
  *      name = "self",
